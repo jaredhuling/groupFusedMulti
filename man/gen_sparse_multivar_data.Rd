@@ -13,6 +13,7 @@ gen_sparse_multivar_data(
     1, 2, 3, 3, 4, 4, 5), c(1:8)),
   effect.size.similarity = c("sign", "mean", "none"),
   hier.sparsity.prob = 0.1,
+  group.fused.prob = 0.1,
   prop.zero.vars = 0.5,
   family = c("gaussian", "binomial"),
   sd = 1,
@@ -62,10 +63,11 @@ function to generate data with hierarchical sparsity
 \examples{
 set.seed(123)
 
-dat.sim <- gen_sparse_multivar_data(nvars = 10L,
+dat.sim <- gen_sparse_multivar_data(nvars = 15L,
                    noutcomes = 8L,
                    nobs = 100L,
                    nobs.test = 100L,
+                   prop.zero.vars = 0.25,
                    outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
                                             c(1,1,1,2,2,3,3,3),
                                             c(1,1,2,3,3,4,4,5),
@@ -90,7 +92,19 @@ fit.adapt <- cv.groupFusedMulti(x, y,
                                 gamma          = 0.25,
                                 nfolds         = 5)
 
+est.coefs <- predict(fit.adapt, type = "coef")
+colnames(beta) <- colnames(est.coefs)
+
+round(est.coefs, 3)
+beta
+
 preds.a <- predict(fit.adapt, x.test, type = 'response')
+
+## rmse for each outcome
+sqrt(colMeans((y.test - preds.a) ^ 2))
+
+## avg rmse
+mean(sqrt(colMeans((y.test - preds.a) ^ 2)))
                    
 }
 

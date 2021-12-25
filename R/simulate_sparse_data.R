@@ -83,6 +83,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                                               c(1:8)),
                                      effect.size.similarity = c("sign", "mean", "none"),
                                      hier.sparsity.prob = 0.1,
+                                     group.fused.prob = 0.25,
                                      prop.zero.vars = 0.5,
                                      family = c("gaussian", "binomial"),
                                      sd  = 1,
@@ -131,6 +132,13 @@ gen_sparse_multivar_data <- function(nvars = 10L,
         {
             beta[j,outcome.grouping == outcome_groups[g]] <- beta[j,outcome.grouping == outcome_groups[g]] * 
               rbinom(1, size = 1, prob = 1-hier.sparsity.prob)
+            
+            ## make all coefs in group equal with certain probability
+            fuse_group <- rbinom(1, size = 1, prob = group.fused.prob)
+            if (fuse_group == 1)
+            {
+              beta[j,outcome.grouping == outcome_groups[g]] <- beta[j,outcome.grouping == outcome_groups[g]]
+            }
         }
       }
     } else
@@ -147,6 +155,13 @@ gen_sparse_multivar_data <- function(nvars = 10L,
           {
             beta[j,outcome.grouping[r,] == outcome_groups[g]] <- beta[j,outcome.grouping[r,] == outcome_groups[g]] * 
               rbinom(1, size = 1, prob = 1-hier.sparsity.prob)
+            
+            ## make all coefs in group equal with certain probability
+            fuse_group <- rbinom(1, size = 1, prob = group.fused.prob)
+            if (fuse_group == 1)
+            {
+              beta[j,outcome.grouping[r,] == outcome_groups[g]] <- beta[j,outcome.grouping[r,] == outcome_groups[g]][1]
+            }
           }
         }
       }

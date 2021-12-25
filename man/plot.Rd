@@ -6,7 +6,13 @@
 \alias{plot.groupFusedMulti}
 \title{Plot method for cv.groupFusedMulti fitted objects}
 \usage{
-\method{plot}{cv.groupFusedMulti}(x, sign.lambda = 1, best.fused = FALSE, ...)
+\method{plot}{cv.groupFusedMulti}(
+  x,
+  sign.lambda = 1,
+  best.fused = FALSE,
+  plot.method = c("lines", "heatmap"),
+  ...
+)
 
 \method{plot}{groupFusedMulti}(
   x,
