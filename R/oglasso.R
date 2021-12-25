@@ -68,8 +68,9 @@
 #' @param irls.tol convergence tolerance for IRLS iterations. Only used if \code{family != "gaussian"}. Default is \code{10^{-5}}.
 #' @return An object with S3 class "oglasso"
 #' @export
+#' @useDynLib groupFusedMulti, .registration=TRUE
 #' @examples
-#' library(vennLassoFused)
+#' library(groupFusedMulti)
 #' 
 #' set.seed(123)
 #' n.obs <- 1e3
@@ -425,7 +426,7 @@ oglasso.fit <- function(family,
                          intercept_            = intercept,
                          compute_se_           = compute.se,
                          opts_                 = opts,
-                         PACKAGE = "vennLassoFused")
+                         PACKAGE = "groupFusedMulti")
         } else {
             fit <- .Call("admm_oglasso_dense",
                          x_                = x,
@@ -446,7 +447,7 @@ oglasso.fit <- function(family,
                          intercept_        = intercept,
                          compute_se_       = compute.se,
                          opts_             = opts,
-                         PACKAGE           = "vennLassoFused")
+                         PACKAGE           = "groupFusedMulti")
         }
     } else
     {
@@ -477,7 +478,7 @@ oglasso.fit <- function(family,
                          intercept_            = intercept,
                          compute_se_           = compute.se,
                          opts_                 = opts,
-                         PACKAGE               = "vennLassoFused")
+                         PACKAGE               = "groupFusedMulti")
         } else if (!is.matrix(lambda))
         {
             fit <- .Call("admm_oglasso_fused_dense",
@@ -503,7 +504,7 @@ oglasso.fit <- function(family,
                          intercept_            = intercept,
                          compute_se_           = compute.se,
                          opts_                 = opts,
-                         PACKAGE               = "vennLassoFused")
+                         PACKAGE               = "groupFusedMulti")
         } else
         {
             fit <- .Call("admm_oglasso_fused_dense_lammat",
@@ -529,7 +530,7 @@ oglasso.fit <- function(family,
                          intercept_            = intercept,
                          compute_se_           = compute.se,
                          opts_                 = opts,
-                         PACKAGE               = "vennLassoFused")
+                         PACKAGE               = "groupFusedMulti")
         }
     }
     fit$fused  <- fused
