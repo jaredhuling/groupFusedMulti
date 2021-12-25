@@ -36,7 +36,8 @@
 #' is 0.01. A very small value of \code{lambda.min.ratio} will lead to a saturated fit in
 #' the \code{nobs < nvars} case.
 #' @param lambda.fused tuning parameter for fused (generalized) lasso penalty
-#' @param use.alpha.param Should the 'alpha' parameterization for the fused lasso be used? 
+#' @param use.alpha.param Should the 'alpha' parameterization for the fused lasso be used? if so, \code{lambda.fused} is the 
+#' proportion of \code{lambda} that is for the fused lasso
 #' @param alpha currently not used. Will be used later for fused lasso
 #' @param penalty.factor vector of weights to be multiplied to the tuning parameter for the
 #' group lasso penalty. A vector of length equal to the number of groups

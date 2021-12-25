@@ -11,6 +11,7 @@
 #' the signs to match, \code{"mean"} for the coefficients to be the same plus some small uniform noise, or \code{"none"} for there
 #' to be no relationship at all
 #' @param hier.sparsity.prob probability that a group has its coefficients set to zero for any variable
+#' @param group.fused.prob probability that all coefficients in a group are set to be equal to each other
 #' @param prop.zero.vars proportion of all variables that will be zero across all outcomes
 #' @param effect.size.max maximum magnitude of the true effect sizes
 #' @param family family for the response variable
@@ -83,7 +84,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                                               c(1:8)),
                                      effect.size.similarity = c("sign", "mean", "none"),
                                      hier.sparsity.prob = 0.1,
-                                     group.fused.prob = 0.25,
+                                     group.fused.prob = 0.5,
                                      prop.zero.vars = 0.5,
                                      family = c("gaussian", "binomial"),
                                      sd  = 1,
@@ -120,10 +121,23 @@ gen_sparse_multivar_data <- function(nvars = 10L,
     beta[1:n_nonzero,] <- sample(c(1,0.5, 0.25, -1, -0.5, -0.25), size = n_nonzero * noutcomes, replace = TRUE)
     
     
+    
+    ## make some effects same across outcomes
+    for (j in 1:n_nonzero)
+    {
+      ## possibly fuse all
+      fuse_group <- rbinom(1, size = 1, prob = group.fused.prob)
+      if (fuse_group == 1)
+      {
+        beta[j,] <- beta[j,][1]
+      }
+    }
+    
     if (!is.matrix(outcome.grouping))
     {
       outcome_groups <- unique(outcome.grouping)
       n_groups <- length(outcome_groups)
+      
       
       ## make groups sparse
       for (j in 1:n_nonzero)
@@ -165,6 +179,8 @@ gen_sparse_multivar_data <- function(nvars = 10L,
           }
         }
       }
+      
+
     }
     
     

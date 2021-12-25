@@ -5,6 +5,9 @@
 #' @param best.fused if \code{TRUE}, make a CV plot only for the best \code{lambda.fused} value. This includes
 #' standard errors in the plot. If \code{FALSE}, plot CV for each value of \code{lambda.fused}. In this case,
 #' no standard errors will be plotted.
+#' @param plot.method either \code{'lines'} in which case a different line of the CV error versus the tuning parameter will be plotted
+#' for each fused lasso tuning parameter, or \code{'heatmap'} in which case a 2 by 2 heatmap of the errors will be plotted
+#' with each tuning parameter on one axis
 #' @rdname plot
 #' @method plot cv.groupFusedMulti
 #' @importFrom graphics abline
@@ -18,30 +21,39 @@
 #' @export
 #' @examples
 #' set.seed(123)
-#' 
-#' dat.sim <- genHierSparseData(ncats = 3, nvars = 25,
-#'                              nobs = 100, 
-#'                              hier.sparsity.param = 0.5,
-#'                              prop.zero.vars = 0.5,
-#'                              effect.size.max = 0.25,
-#'                              family = "gaussian")
+#'
+#' dat.sim <- gen_sparse_multivar_data(nvars = 5L,
+#'                    noutcomes = 8L,
+#'                    nobs = 500L,
+#'                    nobs.test = 500L,
+#'                    prop.zero.vars = 0.25,
+#'                    outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
+#'                                             c(1,1,1,2,2,3,3,3),
+#'                                             c(1,1,2,3,3,4,4,5),
+#'                                             c(1:8)))
 #'
 #' x        <- dat.sim$x
 #' x.test   <- dat.sim$x.test
 #' y        <- dat.sim$y
 #' y.test   <- dat.sim$y.test
-#' grp      <- dat.sim$group.ind
-#' grp.test <- dat.sim$group.ind.test
-#'
-#' fit.adapt <- cv.groupFusedMulti(x, y,
-#'                           grp,
-#'                           adaptive.lasso = TRUE,
-#'                           nlambda        = 25,
-#'                           nfolds         = 4)
-#'                                      
-#' plot(fit.adapt) 
+#' beta     <- dat.sim$beta
 #' 
-plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot.method = c("lines", "heatmap"), ...) 
+#' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+#'                         c(1,1,1,2,2,3,3,3),
+#'                         c(1,1,2,3,3,4,4,5))
+#'                         
+#' fit.adapt <- cv.groupFusedMulti(x, y,
+#'                                 nlambda        = 25,
+#'                                 lambda.fused = c(0.00001, 0.0001, 0.001),
+#'                                 outcome.groups = outcome_groups,
+#'                                 gamma          = 0.25,
+#'                                 nfolds         = 3)
+#'                                 
+#' plot(fit.adapt)
+#' 
+#' plot(fit.adapt, plot.method = "heatmap")
+#' 
+plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot.method = c("lines", "heatmap", "min"), ...) 
 {
     # compute total number of selected variables for each
     # tuning parameter 
@@ -189,9 +201,9 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
                 
                 if (x$groupFusedMulti.fit$use.alpha.param)
                 {
-                    image(1, log(x$lambda.fused), t(seq_along(x$lambda.fused)), col=cols, axes=FALSE,
-                          main = expression(lambda~fused))
-                    axis(4, labels = round(x$lambda.fused, 5), at = log(x$lambda.fused))
+                    image(1, x$lambda.fused, t(seq_along(x$lambda.fused)), col=cols, axes=FALSE,
+                          main = expression(alpha))
+                    axis(4, labels = round(x$lambda.fused, 5), at = (x$lambda.fused))
                 } else
                 {
                     image(1, log(x$lambda.fused), t(seq_along(x$lambda.fused)), col=cols, axes=FALSE,
@@ -201,15 +213,22 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
                 
                 par(old.par)
             }
-        } else
+        } else if (plot.method == "heatmap")
         {
             cv_mat <- do.call(rbind, x$cvm)
             rn <- round(x$lambda.fused, 5) #gsub("[^0-9\\.]", "", rownames(mp_cv$cv_error))
             cn <- round(x$lambda, 4) #gsub("[^0-9\\.]", "", colnames(mp_cv$cv_error))
             
             # topo.colors(250)
-            xlab <- expression(lambda[1])
-            ylab <- expression(lambda[2])
+            if (x$groupFusedMulti.fit$use.alpha.param)
+            {
+                xlab <- expression(lambda)
+                ylab <- expression(alpha)
+            } else
+            {
+                xlab <- expression(lambda[1])
+                ylab <- expression(lambda[2])
+            }
             image(as(cv_mat, "Matrix"), col.regions = vcols, colorkey = TRUE,
                   xlab = xlab, ylab = ylab, scales = list(y = list(labels = rn, at = 1:length(rn)),
                                                           x = list(labels = cn, at = 1:length(cn),
@@ -217,6 +236,55 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
                   ylab.right = "CV MSE",
                   sub = NULL,
                   ...)
+        } else if (plot.method == "min")
+        {
+            
+            if (x$groupFusedMulti.fit$use.alpha.param)
+            {
+                ylab <- expression("Min CV Error across"~~lambda)
+                xlab <- expression(log(alpha))
+            } else
+            {
+                ylab <- expression("Min CV Error across"~~lambda[1])
+                xlab <- expression(log(lambda[2]))
+            }
+            
+            min_cves <- sapply(x$cvm, min)
+            which_min_cves <- sapply(x$cvm, which.min)
+            min_cves_lo <- mapply(function(i,cvl) cvl[i], which_min_cves, x$cvlo)
+            min_cves_hi <- mapply(function(i,cvl) cvl[i], which_min_cves, x$cvup)
+            
+            
+            
+            plot.args = list(x    = log(x$lambda.fused),
+                             y    = min_cves,
+                             ylim = range(c(min_cves_lo, min_cves_hi)),
+                             xlab = xlab,
+                             ylab = ylab,
+                             type = "c", col = "black", xaxt = "n")
+            
+            new.args <- list(...)
+            if(length(new.args)) plot.args[names(new.args)] <- new.args
+            
+            do.call("plot", plot.args)
+            
+            ## col is scales::alpha("firebrick3", 0.4) = "#CD262666"
+            abline(v = log(x$lambda.fused.min), lty = 2, lwd = 1, col = "#CD262666")
+            
+            axis(1, at = log(x$lambda.fused), labels = x$lambda.fused)
+            
+            error.bars(log(x$lambda.fused), 
+                       min_cves_hi, 
+                       min_cves_lo)
+            
+            points(log(x$lambda.fused), min_cves, pch = 19, col="dodgerblue")
+            
+            
+            
+            # plot(min_cves, type = "b", ylim = range(c(min_cves_lo, min_cves_hi)),
+            #      ylab = ylab, xlab = xlab)
+            #    
+            # error.bars(1:length(which_min_cves), min_cves_hi, min_cves_lo)
         }
     } else
     {

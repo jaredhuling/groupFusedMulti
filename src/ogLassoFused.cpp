@@ -573,7 +573,8 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
 
     for (int j = 0; j < nlambda_fused; j++)
     {
-        ilambdaF = lambda_fused[j] * n / datstd.get_scaleY();
+        
+        
         
         beta.setZero();
         
@@ -583,7 +584,19 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
         
         for(int i = 0; i < nlambda; i++)
         {
-            ilambda  = lambda[i] * n / datstd.get_scaleY();
+            if (use_alpha_param)
+            {
+                double lambda_all = lambda[i] * n / datstd.get_scaleY();
+                
+                ilambdaF = lambda_fused[j] * lambda_all;
+                ilambda  = (1 - lambda_fused[j]) * lambda_all;
+                
+            } else
+            {
+                ilambdaF = lambda_fused[j] * n / datstd.get_scaleY();
+                ilambda  = lambda[i] * n / datstd.get_scaleY();
+            }
+            
             
             //std::cout << "lambda: " << i << std::endl;
 

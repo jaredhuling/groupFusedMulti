@@ -71,7 +71,8 @@ the \code{nobs < nvars} case.}
 
 \item{lambda.fused}{tuning parameter for fused (generalized) lasso penalty}
 
-\item{use.alpha.param}{Should the 'alpha' parameterization for the fused lasso be used?}
+\item{use.alpha.param}{Should the 'alpha' parameterization for the fused lasso be used? if so, \code{lambda.fused} is the 
+proportion of \code{lambda} that is for the fused lasso}
 
 \item{alpha}{currently not used. Will be used later for fused lasso}
 

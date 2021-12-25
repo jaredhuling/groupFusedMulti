@@ -10,7 +10,7 @@
   x,
   sign.lambda = 1,
   best.fused = FALSE,
-  plot.method = c("lines", "heatmap"),
+  plot.method = c("lines", "heatmap", "min"),
   ...
 )
 
@@ -35,6 +35,10 @@
 \item{best.fused}{if \code{TRUE}, make a CV plot only for the best \code{lambda.fused} value. This includes
 standard errors in the plot. If \code{FALSE}, plot CV for each value of \code{lambda.fused}. In this case,
 no standard errors will be plotted.}
+
+\item{plot.method}{either \code{'lines'} in which case a different line of the CV error versus the tuning parameter will be plotted
+for each fused lasso tuning parameter, or \code{'heatmap'} in which case a 2 by 2 heatmap of the errors will be plotted
+with each tuning parameter on one axis}
 
 \item{...}{other graphical parameters for the plot}
 
@@ -64,27 +68,36 @@ Plotting method for groupFusedMulti fitted objects
 \examples{
 set.seed(123)
 
-dat.sim <- genHierSparseData(ncats = 3, nvars = 25,
-                             nobs = 100, 
-                             hier.sparsity.param = 0.5,
-                             prop.zero.vars = 0.5,
-                             effect.size.max = 0.25,
-                             family = "gaussian")
+dat.sim <- gen_sparse_multivar_data(nvars = 5L,
+                   noutcomes = 8L,
+                   nobs = 500L,
+                   nobs.test = 500L,
+                   prop.zero.vars = 0.25,
+                   outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
+                                            c(1,1,1,2,2,3,3,3),
+                                            c(1,1,2,3,3,4,4,5),
+                                            c(1:8)))
 
 x        <- dat.sim$x
 x.test   <- dat.sim$x.test
 y        <- dat.sim$y
 y.test   <- dat.sim$y.test
-grp      <- dat.sim$group.ind
-grp.test <- dat.sim$group.ind.test
+beta     <- dat.sim$beta
 
+outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+                        c(1,1,1,2,2,3,3,3),
+                        c(1,1,2,3,3,4,4,5))
+                        
 fit.adapt <- cv.groupFusedMulti(x, y,
-                          grp,
-                          adaptive.lasso = TRUE,
-                          nlambda        = 25,
-                          nfolds         = 4)
-                                     
-plot(fit.adapt) 
+                                nlambda        = 25,
+                                lambda.fused = c(0.00001, 0.0001, 0.001),
+                                outcome.groups = outcome_groups,
+                                gamma          = 0.25,
+                                nfolds         = 3)
+                                
+plot(fit.adapt)
+
+plot(fit.adapt, plot.method = "heatmap")
 
 library(Matrix)
 

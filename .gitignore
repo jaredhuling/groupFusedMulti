@@ -2,7 +2,9 @@
 .Rproj
 .Rhistory
 .RData
-vennLasso_mxl.Rproj
+*.o
+*.so
+*.dll
 src/*.o
 src/*.so
 src/*.dll

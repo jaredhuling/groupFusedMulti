@@ -13,7 +13,7 @@ gen_sparse_multivar_data(
     1, 2, 3, 3, 4, 4, 5), c(1:8)),
   effect.size.similarity = c("sign", "mean", "none"),
   hier.sparsity.prob = 0.1,
-  group.fused.prob = 0.1,
+  group.fused.prob = 0.5,
   prop.zero.vars = 0.5,
   family = c("gaussian", "binomial"),
   sd = 1,
@@ -42,6 +42,8 @@ the signs to match, \code{"mean"} for the coefficients to be the same plus some 
 to be no relationship at all}
 
 \item{hier.sparsity.prob}{probability that a group has its coefficients set to zero for any variable}
+
+\item{group.fused.prob}{probability that all coefficients in a group are set to be equal to each other}
 
 \item{prop.zero.vars}{proportion of all variables that will be zero across all outcomes}
 

@@ -68,7 +68,8 @@ groupFusedMulti <- function(x,
                             lambda           = NULL,
                             lambda.min.ratio = NULL,
                             lambda.fused     = NULL,
-                            use.alpha.param  = TRUE, 
+                            use.alpha.param  = TRUE,
+                            fuse.level       = c("last_group", "first_group", "all"),
                             fuse.none.group  = TRUE,
                             lambda.fused.min       = 1e-5,
                             lambda.fused.max.ratio = 1e-5,
@@ -94,6 +95,7 @@ groupFusedMulti <- function(x,
     
     
     family <- match.arg(family)
+    fuse.level <- match.arg(fuse.level)
     this.call = match.call()
     
     if (family != "gaussian") stop("non-gaussian families not available yet")
@@ -294,10 +296,27 @@ groupFusedMulti <- function(x,
     
     if (is.matrix(outcome.groups))
     {
-        outcome.groups.fuse <- outcome.groups[nrow(outcome.groups),]
+        if (fuse.level == "last_group")
+        {
+            outcome.groups.fuse <- outcome.groups[nrow(outcome.groups),]
+        } else if (fuse.level == "first_group")
+        {
+            outcome.groups.fuse <- outcome.groups[1,]
+        } else if (fuse.level == "all")
+        {
+            outcome.groups.fuse <- rep(1, length(outcome.groups[1,]))
+        }
+            
     } else
     {
-        outcome.groups.fuse <- outcome.groups
+        
+        if (fuse.level == "all")
+        {
+            outcome.groups.fuse <- rep(1, length(outcome.groups))
+        } else
+        {
+            outcome.groups.fuse <- outcome.groups
+        }
     }
     
     group_sizes   <- table(outcome.groups.fuse)

@@ -1,4 +1,4 @@
-#' Cross Validation for the vennLasso
+#' Cross Validation for the groupFusedMulti function
 #'
 #' @param x input matrix or SparseMatrix of dimension nobs x nvars. Each row is an observation,
 #' each column corresponds to a covariate
@@ -23,12 +23,12 @@
 #' and each value of lambda for each model. This means these fits are computed with this observation and the rest of its
 #' fold omitted. The folid vector is also returned. Default is \code{keep = FALSE}
 #' @param parallel If TRUE, use parallel foreach to fit each fold. Must register parallel before hand, such as \pkg{doMC}.
-#' @param ... parameters to be passed to vennLasso
+#' @param ... parameters to be passed to groupFusedMulti
 #' @importFrom stats predict
 #' @importFrom stats stepfun
 #' @importFrom stats weighted.mean
 #' @import foreach
-#' @return An object with S3 class "cv.vennLasso"
+#' @return An object with S3 class "cv.groupFusedMulti"
 #'
 #'
 #' @import Rcpp
@@ -118,15 +118,7 @@ cv.groupFusedMulti <- function(x, y,
                                             ...)
   groupFusedMulti.object$call <- groupFusedMulti.call
   
-  #is.offset=vennLasso.object$offset
-  #lambda=vennLasso.object$lambda
-  #if(inherits(vennLasso.object,"multnet")){
-  #  nz=predict(vennLasso.object,type="nonzero")
-  #  nz=sapply(nz,function(x)sapply(x,length))
-  #  nz=ceiling(apply(nz,1,median))
-  #}
-  #nz=sapply(predict(vennLasso.object,type="nonzero"),length)
-  #if(missing(foldid)) foldid=sample(rep(seq(nfolds),length=N)) else nfolds=max(foldid)
+
   if(missing(foldid)) 
   {
     foldid <- sample(rep(seq(nfolds), length = N))
@@ -141,7 +133,7 @@ cv.groupFusedMulti <- function(x, y,
   ###First try and do it using foreach if parallel is TRUE
   if (parallel) 
   {
-    outlist = foreach (i=seq(nfolds), .packages=c("vennLassoFused")) %dopar% {
+    outlist = foreach (i=seq(nfolds), .packages=c("groupFusedMulti")) %dopar% {
       which <- foldid==i
       if(is.matrix(y)) y_sub <- y[!which,] else y_sub <- y[!which]
       #if(is.offset)offset_sub=as.matrix(offset)[!which,]

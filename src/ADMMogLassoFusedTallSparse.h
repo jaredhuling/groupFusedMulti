@@ -408,6 +408,18 @@ public:
         if (solver.info() == 1)
         {
             std::cout << "Sparse Cholesky solver failed." << std::endl;    
+            
+            matToSolve.diagonal().array() += rho * 1e-5;
+            
+            //std::cout << "before solve FIRST." << std::endl;
+            
+            // precompute LLT decomposition of (X'X + rho * (D'D + C'C))
+            solver.compute(matToSolve.selfadjointView<Eigen::Lower>());
+        }
+        
+        if (solver.info() == 1)
+        {
+            std::cout << "Sparse Cholesky solver failed. Again..." << std::endl;
         }
         
         

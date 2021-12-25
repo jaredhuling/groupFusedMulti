@@ -2,7 +2,7 @@
 % Please edit documentation in R/cv_group_fused_multi.R
 \name{cv.groupFusedMulti}
 \alias{cv.groupFusedMulti}
-\title{Cross Validation for the vennLasso}
+\title{Cross Validation for the groupFusedMulti function}
 \usage{
 cv.groupFusedMulti(
   x,
@@ -54,13 +54,13 @@ fold omitted. The folid vector is also returned. Default is \code{keep = FALSE}}
 
 \item{parallel}{If TRUE, use parallel foreach to fit each fold. Must register parallel before hand, such as \pkg{doMC}.}
 
-\item{...}{parameters to be passed to vennLasso}
+\item{...}{parameters to be passed to groupFusedMulti}
 }
 \value{
-An object with S3 class "cv.vennLasso"
+An object with S3 class "cv.groupFusedMulti"
 }
 \description{
-Cross Validation for the vennLasso
+Cross Validation for the groupFusedMulti function
 }
 \examples{
 

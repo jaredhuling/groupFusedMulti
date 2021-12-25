@@ -15,6 +15,7 @@ groupFusedMulti(
   lambda.min.ratio = NULL,
   lambda.fused = NULL,
   use.alpha.param = TRUE,
+  fuse.level = c("last_group", "first_group", "all"),
   fuse.none.group = TRUE,
   lambda.fused.min = 1e-05,
   lambda.fused.max.ratio = 1e-05,
