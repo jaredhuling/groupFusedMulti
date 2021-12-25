@@ -4,9 +4,9 @@
 
 #include "ADMMogLassoTall.h"
 #include "ADMMogLassoWide.h"
-#include "ADMMogLassoLogisticTall.h"
-#include "ADMMogLassoLogisticWide.h"
-#include "ADMMogLassoCoxPHTall.h"
+//#include "ADMMogLassoLogisticTall.h"
+//#include "ADMMogLassoLogisticWide.h"
+//#include "ADMMogLassoCoxPHTall.h"
 //#include "ADMMogLassoWide.h"
 #include "DataStd.h"
 #include <RcppNumerical.h>
@@ -263,16 +263,16 @@ RcppExport SEXP admm_oglasso_dense(SEXP x_,
                                               eps_abs, eps_rel);
         } else if (family(0) == "binomial")
         {
-            solver_tall = new ADMMogLassoLogisticTall(datX, datY, C, n, p + add, M, ngroups,
-                                                      family, group_weights, group_idx,
-                                                      dynamic_rho, irls_tol, irls_maxit,
-                                                      eps_abs, eps_rel);
+            // solver_tall = new ADMMogLassoLogisticTall(datX, datY, C, n, p + add, M, ngroups,
+            //                                           family, group_weights, group_idx,
+            //                                           dynamic_rho, irls_tol, irls_maxit,
+            //                                           eps_abs, eps_rel);
         } else if (family(0) == "coxph")
         {
-            solver_tall = new ADMMogLassoCoxPHTall(datX, datY, delta, C, n, p, M, ngroups,
-                                                   family, group_weights, group_idx,
-                                                   dynamic_rho, irls_tol, irls_maxit,
-                                                   eps_abs, eps_rel);
+            // solver_tall = new ADMMogLassoCoxPHTall(datX, datY, delta, C, n, p, M, ngroups,
+            //                                        family, group_weights, group_idx,
+            //                                        dynamic_rho, irls_tol, irls_maxit,
+            //                                        eps_abs, eps_rel);
         }
     }
     else
@@ -286,10 +286,10 @@ RcppExport SEXP admm_oglasso_dense(SEXP x_,
                                               eps_abs, eps_rel);
         } else if (family(0) == "binomial")
         {
-            solver_wide = new ADMMogLassoLogisticWide(datX, datY, C, n, p + add, M, ngroups,
-                                                      family, group_weights, group_idx,
-                                                      dynamic_rho, irls_tol, irls_maxit,
-                                                      eps_abs, eps_rel);
+            // solver_wide = new ADMMogLassoLogisticWide(datX, datY, C, n, p + add, M, ngroups,
+            //                                           family, group_weights, group_idx,
+            //                                           dynamic_rho, irls_tol, irls_maxit,
+            //                                           eps_abs, eps_rel);
         }
          
     }

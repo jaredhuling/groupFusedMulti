@@ -1,33 +1,4 @@
 
-#' @importFrom stats sd
-checkWhichVarsMissingForWhichConditions <- function(x, group.indicators) {
-    # checks if any variables are missing for an entire disease condition
-    # returns logical matrix of dimension (num.vars)x(num.groups) with TRUE
-    # in position i,j indicating that variable i is missing in all of group j
-    t(apply(is.na(x), 2,
-            function(x.bool) apply(group.indicators, 2, function(gr) all(x.bool[which(gr == 1)]) ) ) )
-}
-
-checkWhichVarsMissingForAllButOneCondition <- function(x, group.indicators) {
-    # checks if any variables are missing for all entire disease condition
-    # returns logical matrix of dimension (num.vars)x(num.groups) with TRUE
-    # in position i,j indicating that variable i is missing in all of group j
-    t(apply(is.na(x), 2,
-            function(x.bool) apply(group.indicators, 2, function(gr) all(x.bool[which(gr != 1)]) ) ) )
-}
-
-checkWhichVarsZeroSDForWhichConditions <- function(x, group.indicators, combin.mat) {
-    # checks if any variables are missing for an entire disease condition
-    # returns logical matrix of dimension (num.vars)x(num.groups) with TRUE
-    # in position i,j indicating that variable i has zero std dev in all of group j
-    gr.symbols <- apply(group.indicators, 1, function(xx) paste(xx, collapse = ","))
-    combins.unique <- apply(combin.mat, 1, function(xx) paste(xx, collapse = ","))
-    ret <- t(apply(x, 2,
-                   function(xj) sapply(combins.unique, function(gr) sd(xj[which(gr == gr.symbols)], na.rm = TRUE) == 0 ) ) )
-    ret[is.na(ret)] <- TRUE
-    ret
-}
-
 
 # taken from glmnet
 cvcompute <- function(mat,weights,foldid,nlams)

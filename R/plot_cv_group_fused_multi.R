@@ -33,7 +33,7 @@
 #' grp      <- dat.sim$group.ind
 #' grp.test <- dat.sim$group.ind.test
 #'
-#' fit.adapt <- cv.vennLasso(x, y,
+#' fit.adapt <- cv.groupFusedMulti(x, y,
 #'                           grp,
 #'                           adaptive.lasso = TRUE,
 #'                           nlambda        = 25,

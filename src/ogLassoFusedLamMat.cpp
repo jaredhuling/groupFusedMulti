@@ -3,8 +3,8 @@
 #define EIGEN_DONT_PARALLELIZE
 
 #include "ADMMogLassoFusedTall.h"
-#include "ADMMogLassoLogisticFusedTall.h"
-#include "ADMMogLassoCoxPHFusedTall.h"
+// #include "ADMMogLassoLogisticFusedTall.h"
+// #include "ADMMogLassoCoxPHFusedTall.h"
 //#include "ADMMogLassoWide.h"
 #include "DataStd.h"
 #include <RcppNumerical.h>
@@ -280,24 +280,24 @@ RcppExport SEXP admm_oglasso_fused_dense_lammat(SEXP x_,
                                                    eps_abs, eps_rel);
         } else if (family(0) == "binomial")
         {
-            solver_tall = new ADMMogLassoLogisticFusedTall(datX, datY, C, fused, n, p + add, M,
-                                                           ngroups, nfused,
-                                                           family,
-                                                           group_weights,
-                                                           adaptive_fused_weights,
-                                                           group_idx, dynamic_rho,
-                                                           irls_tol, irls_maxit,
-                                                           eps_abs, eps_rel);
+            // solver_tall = new ADMMogLassoLogisticFusedTall(datX, datY, C, fused, n, p + add, M,
+            //                                                ngroups, nfused,
+            //                                                family,
+            //                                                group_weights,
+            //                                                adaptive_fused_weights,
+            //                                                group_idx, dynamic_rho,
+            //                                                irls_tol, irls_maxit,
+            //                                                eps_abs, eps_rel);
         } else if (family(0) == "coxph")
         {
-            solver_tall = new ADMMogLassoCoxPHFusedTall(datX, datY, delta, C, fused, n, p, M,
-                                                        ngroups, nfused,
-                                                        family,
-                                                        group_weights,
-                                                        adaptive_fused_weights,
-                                                        group_idx, dynamic_rho,
-                                                        irls_tol, irls_maxit,
-                                                        eps_abs, eps_rel);
+            // solver_tall = new ADMMogLassoCoxPHFusedTall(datX, datY, delta, C, fused, n, p, M,
+            //                                             ngroups, nfused,
+            //                                             family,
+            //                                             group_weights,
+            //                                             adaptive_fused_weights,
+            //                                             group_idx, dynamic_rho,
+            //                                             irls_tol, irls_maxit,
+            //                                             eps_abs, eps_rel);
         }
     }
     else
