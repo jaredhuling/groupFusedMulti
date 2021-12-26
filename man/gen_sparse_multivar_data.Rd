@@ -9,18 +9,14 @@ gen_sparse_multivar_data(
   noutcomes = 8L,
   nobs = 100L,
   nobs.test = 100L,
-  outcome.grouping = rbind(c(1, 1, 1, 2, 2, 2, 2, 2), c(1, 1, 1, 2, 2, 3, 3, 3), c(1,
-    1, 2, 3, 3, 4, 4, 5), c(1:8)),
-  effect.size.similarity = c("sign", "mean", "none"),
+  outcome.groups = rbind(c(1, 1, 1, 2, 2, 2, 2, 2), c(1, 1, 1, 2, 2, 3, 3, 3), c(1:8)),
   hier.sparsity.prob = 0.1,
   group.fused.prob = 0.5,
   prop.zero.vars = 0.5,
   family = c("gaussian", "binomial"),
   sd = 1,
-  snr = NULL,
   beta = NULL,
-  tau = 10,
-  x.covar = 0,
+  x.rho = 0.5,
   y.covar = 0.5
 )
 }
@@ -33,13 +29,9 @@ gen_sparse_multivar_data(
 
 \item{nobs.test}{number of independent test observations per outcomes to simulate}
 
-\item{outcome.grouping}{groups for outcomes -- either a vector of length \code{noutcomes} of indices of what groups each outcome belongs to
+\item{outcome.groups}{groups for outcomes -- either a vector of length \code{noutcomes} of indices of what groups each outcome belongs to
 or a matrix with \code{noutcomes} columns, with each row as a different grouping of the outcomes -- this allows for potentially overlapping
 groups of the outcomes}
-
-\item{effect.size.similarity}{How should the effect sizes of a variable across the outcomes be related? \code{"sign"} for
-the signs to match, \code{"mean"} for the coefficients to be the same plus some small uniform noise, or \code{"none"} for there
-to be no relationship at all}
 
 \item{hier.sparsity.prob}{probability that a group has its coefficients set to zero for any variable}
 
@@ -53,7 +45,7 @@ to be no relationship at all}
 
 \item{beta}{a matrix of true beta values. If given, then no beta will be created and data will be simulated from the given beta}
 
-\item{x.covar}{scalar, pairwise covariance term for covariates}
+\item{x.rho}{scalar, AR(1) correlation parameter for covariate distribution}
 
 \item{y.covar}{scalar, pairwise covariance term for outcomes}
 
@@ -70,10 +62,9 @@ dat.sim <- gen_sparse_multivar_data(nvars = 15L,
                    nobs = 100L,
                    nobs.test = 100L,
                    prop.zero.vars = 0.25,
-                   outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
-                                            c(1,1,1,2,2,3,3,3),
-                                            c(1,1,2,3,3,4,4,5),
-                                            c(1:8)))
+                   outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+                                          c(1,1,1,2,2,3,3,3),
+                                          c(1:8)))
 
 x        <- dat.sim$x
 x.test   <- dat.sim$x.test
@@ -84,8 +75,7 @@ beta     <- dat.sim$beta
 \dontrun{
 
 outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
-                        c(1,1,1,2,2,3,3,3),
-                        c(1,1,2,3,3,4,4,5))
+                        c(1,1,1,2,2,3,3,3))
                         
 fit.adapt <- cv.groupFusedMulti(x, y,
                                 nlambda        = 50,

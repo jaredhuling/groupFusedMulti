@@ -4,12 +4,9 @@
 #' @param noutcomes number of outcomes
 #' @param nobs number of observations per outcomes to simulate
 #' @param nobs.test number of independent test observations per outcomes to simulate
-#' @param outcome.grouping groups for outcomes -- either a vector of length \code{noutcomes} of indices of what groups each outcome belongs to
+#' @param outcome.groups groups for outcomes -- either a vector of length \code{noutcomes} of indices of what groups each outcome belongs to
 #' or a matrix with \code{noutcomes} columns, with each row as a different grouping of the outcomes -- this allows for potentially overlapping
 #' groups of the outcomes
-#' @param effect.size.similarity How should the effect sizes of a variable across the outcomes be related? \code{"sign"} for
-#' the signs to match, \code{"mean"} for the coefficients to be the same plus some small uniform noise, or \code{"none"} for there
-#' to be no relationship at all
 #' @param hier.sparsity.prob probability that a group has its coefficients set to zero for any variable
 #' @param group.fused.prob probability that all coefficients in a group are set to be equal to each other
 #' @param prop.zero.vars proportion of all variables that will be zero across all outcomes
@@ -17,7 +14,7 @@
 #' @param family family for the response variable
 #' @param sd standard devation for gaussian simulations
 #' @param beta a matrix of true beta values. If given, then no beta will be created and data will be simulated from the given beta
-#' @param x.covar scalar, pairwise covariance term for covariates
+#' @param x.rho  scalar, AR(1) correlation parameter for covariate distribution
 #' @param y.covar scalar, pairwise covariance term for outcomes
 #' @importFrom stats rnorm
 #' @importFrom stats var
@@ -33,10 +30,9 @@
 #'                    nobs = 100L,
 #'                    nobs.test = 100L,
 #'                    prop.zero.vars = 0.25,
-#'                    outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
-#'                                             c(1,1,1,2,2,3,3,3),
-#'                                             c(1,1,2,3,3,4,4,5),
-#'                                             c(1:8)))
+#'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+#'                                           c(1,1,1,2,2,3,3,3),
+#'                                           c(1:8)))
 #'
 #' x        <- dat.sim$x
 #' x.test   <- dat.sim$x.test
@@ -47,8 +43,7 @@
 #' \dontrun{
 #'
 #' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
-#'                         c(1,1,1,2,2,3,3,3),
-#'                         c(1,1,2,3,3,4,4,5))
+#'                         c(1,1,1,2,2,3,3,3))
 #'                         
 #' fit.adapt <- cv.groupFusedMulti(x, y,
 #'                                 nlambda        = 50,
@@ -78,32 +73,26 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                      noutcomes = 8L,
                                      nobs = 100L,
                                      nobs.test = 100L,
-                                     outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
-                                                              c(1,1,1,2,2,3,3,3),
-                                                              c(1,1,2,3,3,4,4,5),
-                                                              c(1:8)),
-                                     effect.size.similarity = c("sign", "mean", "none"),
+                                     outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+                                                            c(1,1,1,2,2,3,3,3),
+                                                            c(1:8)),
                                      hier.sparsity.prob = 0.1,
                                      group.fused.prob = 0.5,
                                      prop.zero.vars = 0.5,
                                      family = c("gaussian", "binomial"),
                                      sd  = 1,
-                                     snr = NULL,
                                      beta = NULL,
-                                     tau = 10,
-                                     x.covar = 0,
+                                     x.rho   = 0.5,
                                      y.covar = 0.5
 )
 {
 
-    effect.size.similarity <- match.arg(effect.size.similarity)
     family <- match.arg(family)
 
-    stopifnot(x.covar[1] >= 0)
+    #stopifnot(x.rho[1] >= 0)
     stopifnot(y.covar[1] >= 0)
     
-    sig_X <- matrix(x.covar, nrow = nvars, ncol = nvars)
-    diag(sig_X) <- 1
+    sig_X <- x.rho ^ abs(outer(1:nvars, 1:nvars, FUN = "-"))
     
     sig_y <- matrix(y.covar, nrow = noutcomes, ncol = noutcomes)
     diag(sig_y) <- 1
@@ -133,9 +122,9 @@ gen_sparse_multivar_data <- function(nvars = 10L,
       }
     }
     
-    if (!is.matrix(outcome.grouping))
+    if (!is.matrix(outcome.groups))
     {
-      outcome_groups <- unique(outcome.grouping)
+      outcome_groups <- unique(outcome.groups)
       n_groups <- length(outcome_groups)
       
       
@@ -144,22 +133,22 @@ gen_sparse_multivar_data <- function(nvars = 10L,
       {
         for (g in 1:n_groups)
         {
-            beta[j,outcome.grouping == outcome_groups[g]] <- beta[j,outcome.grouping == outcome_groups[g]] * 
+            beta[j,outcome.groups == outcome_groups[g]] <- beta[j,outcome.groups == outcome_groups[g]] * 
               rbinom(1, size = 1, prob = 1-hier.sparsity.prob)
             
             ## make all coefs in group equal with certain probability
             fuse_group <- rbinom(1, size = 1, prob = group.fused.prob)
             if (fuse_group == 1)
             {
-              beta[j,outcome.grouping == outcome_groups[g]] <- beta[j,outcome.grouping == outcome_groups[g]]
+              beta[j,outcome.groups == outcome_groups[g]] <- beta[j,outcome.groups == outcome_groups[g]]
             }
         }
       }
     } else
     {
-      for (r in 1:nrow(outcome.grouping))
+      for (r in 1:nrow(outcome.groups))
       {
-        outcome_groups <- unique(outcome.grouping[r,])
+        outcome_groups <- unique(outcome.groups[r,])
         n_groups <- length(outcome_groups)
         
         ## make groups sparse
@@ -167,14 +156,14 @@ gen_sparse_multivar_data <- function(nvars = 10L,
         {
           for (g in 1:n_groups)
           {
-            beta[j,outcome.grouping[r,] == outcome_groups[g]] <- beta[j,outcome.grouping[r,] == outcome_groups[g]] * 
+            beta[j,outcome.groups[r,] == outcome_groups[g]] <- beta[j,outcome.groups[r,] == outcome_groups[g]] * 
               rbinom(1, size = 1, prob = 1-hier.sparsity.prob)
             
             ## make all coefs in group equal with certain probability
             fuse_group <- rbinom(1, size = 1, prob = group.fused.prob)
             if (fuse_group == 1)
             {
-              beta[j,outcome.grouping[r,] == outcome_groups[g]] <- beta[j,outcome.grouping[r,] == outcome_groups[g]][1]
+              beta[j,outcome.groups[r,] == outcome_groups[g]] <- beta[j,outcome.groups[r,] == outcome_groups[g]][1]
             }
           }
         }
