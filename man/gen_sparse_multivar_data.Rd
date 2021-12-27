@@ -9,7 +9,7 @@ gen_sparse_multivar_data(
   noutcomes = 8L,
   nobs = 100L,
   nobs.test = 100L,
-  outcome.groups = rbind(c(1, 1, 1, 2, 2, 2, 2, 2), c(1, 1, 1, 2, 2, 3, 3, 3), c(1:8)),
+  outcome.groups = rbind(c(1, 1, 1, 2, 2, 2, 2, 2), c(1, 1, 1, 2, 2, 3, 3, 3)),
   hier.sparsity.prob = 0.1,
   individ.sparsity.prob = 0.25,
   group.fused.prob = 0.5,

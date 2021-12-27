@@ -75,8 +75,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                      nobs = 100L,
                                      nobs.test = 100L,
                                      outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
-                                                            c(1,1,1,2,2,3,3,3),
-                                                            c(1:8)),
+                                                            c(1,1,1,2,2,3,3,3)),
                                      hier.sparsity.prob = 0.1,
                                      individ.sparsity.prob = 0.25,
                                      group.fused.prob = 0.5,
@@ -85,8 +84,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                      sd  = 1,
                                      beta = NULL,
                                      x.rho = 0.5,
-                                     y.rho = 0.5
-)
+                                     y.rho = 0.5)
 {
 
     family <- match.arg(family)
@@ -110,7 +108,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
     
     n_nonzero <- num.nonzero.vars
     beta <- matrix(0, nrow = nvars, ncol = noutcomes)
-    beta[1:n_nonzero,] <- sample(c(1,0.5, 0.25, -1, -0.5, -0.25), size = n_nonzero * noutcomes, replace = TRUE)
+    beta[1:n_nonzero,] <- sample(c(1,0.5, 0.25, 0.125, -1, -0.5, -0.125), size = n_nonzero * noutcomes, replace = TRUE)
     
     
     
