@@ -20,9 +20,10 @@
   lam.fused.idx = NULL,
   which.outcome = 1,
   which.variable = 1,
-  xvar = c("norm", "lambda", "loglambda", "dev"),
+  xvar = c("loglambda", "norm", "lambda", "dev"),
   xlab = iname,
   ylab = "Coefficients",
+  labsize = 1,
   plot_only_nonzero = TRUE,
   ...
 )
@@ -59,6 +60,8 @@ against the percent deviance explained.}
 \item{xlab}{character value supplied for x-axis label}
 
 \item{ylab}{character value supplied for y-axis label}
+
+\item{labsize}{label size}
 }
 \description{
 Plot method for cv.groupFusedMulti fitted objects

@@ -266,8 +266,10 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
         adaptive_fused_weights(ff) *= penalty_factor_fused(ff);
     }
 
+    
+    bool tall_condition = 2 * n >= p || p < 10000;
 
-    if(n > 2 * p || p < 4500)
+    if(tall_condition)
     {
 
         if (family(0) == "gaussian")
@@ -326,7 +328,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
     if(nlambda < 1)
     {
         double lmax = 0.0;
-        if(n > 2 * p || p < 4500)
+        if(tall_condition)
         {
             lmax = solver_tall->get_lambda_zero() / n * datstd.get_scaleY();
         }
@@ -363,7 +365,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
         VectorXd d, fu;
         //ilambda = 1e-10 * lambda[0] * n / datstd.get_scaleY();
         ilambda = 1e-2 * lambda[nlambda - 1] * n / datstd.get_scaleY();
-        if(n > 2 * p || p < 4500)
+        if(tall_condition)
         {
             if (p <= n)
             {
@@ -536,7 +538,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
                 adaptive_weights(g) = ada_wt;
                 group_weights(g) *= ada_wt; // multiply weights by adaptive lasso weights
             }
-            if(n > 2 * p || p < 4500)
+            if(tall_condition)
             {
                 solver_tall->update_adaptive_group_weights(group_weights);
             }
@@ -558,7 +560,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
                 adaptive_fused_weights(ff) *= ada_wt;
             }
 
-            if(n > 2 * p || p < 4500)
+            if(tall_condition)
             {
                 solver_tall->update_adaptive_fused_weights(adaptive_fused_weights);
             }
@@ -600,7 +602,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
             
             //std::cout << "lambda: " << i << std::endl;
 
-            if(n > 2 * p || p < 4500)
+            if(tall_condition)
             {
                 if(i == 0)
                     solver_tall->init(ilambda, rho, ilambdaF);
@@ -698,7 +700,7 @@ RcppExport SEXP admm_oglasso_fused_dense(SEXP x_,
     VectorXd XY; // XtY
 
     // need to deallocate dynamic object
-    if(n > 2 * p || p < 4500)
+    if(tall_condition)
     {
         XX = solver_tall->get_hessian();
         XY = solver_tall->get_xty();
@@ -851,6 +853,9 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
     VectorXd adaptive_weights(ngroups);
     adaptive_weights.setZero();
     
+    
+    bool tall_condition = 2 * n >= p || p < 10000;
+    
     // don't standardize if not linear model.
     // fit intercept the dumb way if it is wanted
     bool fullbetamat = false;
@@ -928,7 +933,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
     
     
     
-    if(n > p)
+    if(tall_condition)
     {
         
         if (family(0) == "gaussian")
@@ -988,7 +993,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
     if(nlambda < 1)
     {
         double lmax = 0.0;
-        if(n > p)
+        if(tall_condition)
         {
             double lamzero = solver_tall->get_lambda_zero();
             double scaley = datstd.get_scaleY();
@@ -1030,7 +1035,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
         VectorXd d, fu;
         //ilambda = 1e-10 * lambda[0] * n / datstd.get_scaleY();
         ilambda = 1e-2 * lambda[nlambda - 1] * n / datstd.get_scaleY();
-        if(n > p)
+        if(tall_condition)
         {
             if (p <= n)
             {
@@ -1207,7 +1212,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
                 adaptive_weights(g) = ada_wt;
                 group_weights(g) *= ada_wt; // multiply weights by adaptive lasso weights
             }
-            if(n > p)
+            if(tall_condition)
             {
                 solver_tall->update_adaptive_group_weights(group_weights);
             }
@@ -1229,7 +1234,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
                 adaptive_fused_weights(ff) *= ada_wt;
             }
             
-            if(n > p)
+            if(tall_condition)
             {
                 solver_tall->update_adaptive_fused_weights(adaptive_fused_weights);
             }
@@ -1258,7 +1263,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
             
             //std::cout << "lambda: " << i << " " << ilambda << std::endl;
             
-            if(n > p)
+            if(tall_condition)
             {
                 
                 if(i == 0)
@@ -1360,7 +1365,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
     VectorXd XY; // XtY
     
     // need to deallocate dynamic object
-    if(n > p)
+    if(tall_condition)
     {
         XX = solver_tall->get_hessian();
         XY = solver_tall->get_xty();

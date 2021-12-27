@@ -11,13 +11,14 @@ gen_sparse_multivar_data(
   nobs.test = 100L,
   outcome.groups = rbind(c(1, 1, 1, 2, 2, 2, 2, 2), c(1, 1, 1, 2, 2, 3, 3, 3), c(1:8)),
   hier.sparsity.prob = 0.1,
+  individ.sparsity.prob = 0.25,
   group.fused.prob = 0.5,
   prop.zero.vars = 0.5,
   family = c("gaussian", "binomial"),
   sd = 1,
   beta = NULL,
   x.rho = 0.5,
-  y.covar = 0.5
+  y.rho = 0.5
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ groups of the outcomes}
 
 \item{hier.sparsity.prob}{probability that a group has its coefficients set to zero for any variable}
 
+\item{individ.sparsity.prob}{probability that a specific coefficient is set to zero}
+
 \item{group.fused.prob}{probability that all coefficients in a group are set to be equal to each other}
 
 \item{prop.zero.vars}{proportion of all variables that will be zero across all outcomes}
@@ -47,7 +50,7 @@ groups of the outcomes}
 
 \item{x.rho}{scalar, AR(1) correlation parameter for covariate distribution}
 
-\item{y.covar}{scalar, pairwise covariance term for outcomes}
+\item{y.rho}{scalar, AR(1) correlation parameter for outcomes}
 
 \item{effect.size.max}{maximum magnitude of the true effect sizes}
 }

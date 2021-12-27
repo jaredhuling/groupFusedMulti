@@ -8,14 +8,15 @@
 #' or a matrix with \code{noutcomes} columns, with each row as a different grouping of the outcomes -- this allows for potentially overlapping
 #' groups of the outcomes
 #' @param hier.sparsity.prob probability that a group has its coefficients set to zero for any variable
+#' @param individ.sparsity.prob probability that a specific coefficient is set to zero
 #' @param group.fused.prob probability that all coefficients in a group are set to be equal to each other
 #' @param prop.zero.vars proportion of all variables that will be zero across all outcomes
 #' @param effect.size.max maximum magnitude of the true effect sizes
 #' @param family family for the response variable
 #' @param sd standard devation for gaussian simulations
 #' @param beta a matrix of true beta values. If given, then no beta will be created and data will be simulated from the given beta
-#' @param x.rho  scalar, AR(1) correlation parameter for covariate distribution
-#' @param y.covar scalar, pairwise covariance term for outcomes
+#' @param x.rho scalar, AR(1) correlation parameter for covariate distribution
+#' @param y.rho scalar, AR(1) correlation parameter for outcomes
 #' @importFrom stats rnorm
 #' @importFrom stats var
 #' @importFrom stats approx
@@ -77,25 +78,25 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                                             c(1,1,1,2,2,3,3,3),
                                                             c(1:8)),
                                      hier.sparsity.prob = 0.1,
+                                     individ.sparsity.prob = 0.25,
                                      group.fused.prob = 0.5,
                                      prop.zero.vars = 0.5,
                                      family = c("gaussian", "binomial"),
                                      sd  = 1,
                                      beta = NULL,
-                                     x.rho   = 0.5,
-                                     y.covar = 0.5
+                                     x.rho = 0.5,
+                                     y.rho = 0.5
 )
 {
 
     family <- match.arg(family)
 
     #stopifnot(x.rho[1] >= 0)
-    stopifnot(y.covar[1] >= 0)
+    stopifnot(y.rho[1] >= 0)
     
     sig_X <- x.rho ^ abs(outer(1:nvars, 1:nvars, FUN = "-"))
     
-    sig_y <- matrix(y.covar, nrow = noutcomes, ncol = noutcomes)
-    diag(sig_y) <- 1
+    sig_y <- y.rho ^ abs(outer(1:noutcomes, 1:noutcomes, FUN = "-"))
     
     ## training x/eps
     x   <- MASS::mvrnorm(n = nobs, mu = numeric(nvars), Sigma = sig_X)
@@ -172,6 +173,13 @@ gen_sparse_multivar_data <- function(nvars = 10L,
 
     }
     
+    ## individual coefficient sparsity-inducing matrix
+    sparsity_individ_mask <- matrix(rbinom(nvars * noutcomes, size = 1, 
+                                           prob = 1 - individ.sparsity.prob), 
+                                    nrow = nvars, ncol = noutcomes)
+    
+    beta <- beta * sparsity_individ_mask
+    
     
     xbeta <- x %*% beta
     x.testbeta <- x.test %*% beta
@@ -182,7 +190,8 @@ gen_sparse_multivar_data <- function(nvars = 10L,
     
     list(beta = beta, 
          x = x, y = y, 
-         x.test = x.test, y.test = y.test)
+         x.test = x.test, 
+         y.test = y.test)
 }
 
 

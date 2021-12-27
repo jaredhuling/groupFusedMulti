@@ -13,10 +13,13 @@
 #' against the percent deviance explained.
 #' @param xlab character value supplied for x-axis label
 #' @param ylab character value supplied for y-axis label
+#' @param labsize label size
 #' @param ... other graphical parameters for the plot
 #' @rdname plot
 #' @importFrom graphics matplot
 #' @importFrom stats na.omit
+#' @importFrom ggrepel geom_text_repel
+#' @importFrom cowplot plot_grid align_plots
 #' @export
 #' @examples
 #' library(Matrix)
@@ -55,8 +58,9 @@ plot.groupFusedMulti <- function(x,
                                  lam.fused.idx = NULL,
                                  which.outcome = 1,
                                  which.variable = 1,
-                                 xvar = c("norm", "lambda", "loglambda", "dev"),
+                                 xvar = c("loglambda", "norm", "lambda", "dev"),
                                  xlab = iname, ylab = "Coefficients",
+                                 labsize = 1,
                                  plot_only_nonzero = TRUE,
                                  ...)
 {
@@ -245,7 +249,7 @@ plot.groupFusedMulti <- function(x,
         colseq <- cols[scramble.seq]
     }
     
-    if (plot.type == "all_variables")
+    if (plot_type == "all_variables")
     {
         # Adjust the margins to make sure the labels fit
         labwidth <- ifelse(labsize > 0, max(strwidth(rownames(nbeta), "inches", labsize)), 0)
@@ -296,11 +300,11 @@ plot.groupFusedMulti <- function(x,
             #      lty = 1, col = colseq,  ...)
         }
         par("mai"=margins)
-    } else if (plot.type == "all_outcomes")
+    } else if (plot_type == "all_outcomes")
     {
         coefsplot <- as.data.frame(nbeta)
         coefsplot$Outcome <- rownames(coefsplot)
-        coefsplot$Outcome_Groups <- x$outcome.groups
+        coefsplot$Outcome_Groups <- as.factor(x$outcome.groups)
         lamcols <- head(colnames(coefsplot),-2)
         coefsplot_tall <- reshape(as.data.frame(coefsplot), direction = "long", varying = list(lamcols))#, times = as.numeric(lamcols))
         colnames(coefsplot_tall)[4] <- "Beta"
