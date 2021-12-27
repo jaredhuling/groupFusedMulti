@@ -30,10 +30,9 @@
 #'                    noutcomes = 8L,
 #'                    nobs = 100L,
 #'                    nobs.test = 100L,
-#'                    prop.zero.vars = 0.25,
+#'                    num.nonzero.vars = 10,
 #'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
-#'                                           c(1,1,1,2,2,3,3,3),
-#'                                           c(1:8)))
+#'                                           c(1,1,1,2,2,3,3,3)))
 #'
 #' x        <- dat.sim$x
 #' x.test   <- dat.sim$x.test
@@ -50,6 +49,7 @@
 #'                                 nlambda        = 50,
 #'                                 lambda.fused = c(0.000005, 0.00001, 0.000025, 0.00005, 0.0001),
 #'                                 outcome.groups = outcome_groups,
+#'                                 adaptive.lasso = TRUE, adaptive.fused = TRUE,
 #'                                 gamma          = 0.25,
 #'                                 nfolds         = 5)
 #' 

@@ -939,13 +939,13 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
         if (family(0) == "gaussian")
         {
             solver_tall = new ADMMogLassoFusedTallSparse(datX, datY, C, fused, n, p, M, intercept_bin,
-                                                   ngroups, nfused,
-                                                   family,
-                                                   group_weights,
-                                                   adaptive_fused_weights,
-                                                   group_idx, dynamic_rho,
-                                                   irls_tol, irls_maxit,
-                                                   eps_abs, eps_rel);
+                                                         ngroups, nfused,
+                                                         family,
+                                                         group_weights,
+                                                         adaptive_fused_weights,
+                                                         group_idx, dynamic_rho,
+                                                         irls_tol, irls_maxit,
+                                                         eps_abs, eps_rel);
         } else if (family(0) == "binomial")
         {
             // solver_tall = new ADMMogLassoLogisticFusedTall(datX, datY, C, fused, n, p + add, M,
@@ -1028,17 +1028,20 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
     // if adaptive_lasso is specified, then call the solver
     // and estimate a model with no penalty applied
     
-    VectorXd beta_unpen;
+    VectorXd beta_unpen(p);
     
     if (adaptive_lasso || adaptive_fused)
     {
         VectorXd d, fu;
         //ilambda = 1e-10 * lambda[0] * n / datstd.get_scaleY();
         ilambda = 1e-2 * lambda[nlambda - 1] * n / datstd.get_scaleY();
+        
+        
         if(tall_condition)
         {
             if (p <= n)
             {
+                
                 solver_tall->init(ilambda, rho, ilambda);
                 solver_tall->solve(maxit);
                 //VectorXd res = solver_tall->get_aux_gamma();
@@ -1064,6 +1067,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
                     //datstd.recover(beta0, restmp);
                     beta_unpen = restmp;
                 }
+                
                 double maxbetaval = beta_unpen.array().abs().maxCoeff();
                 
                 // if the MLEs are divergent then use
@@ -1090,20 +1094,26 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
                 
             } else
             {
+                
+                
                 // marginal regression for adaptive weights
                 if (family(0) == "gaussian")
                 {
                     double ysum = datY.sum();
-                    VectorXd xsums  = VectorXd::Ones(datX.rows()) * datX;
                     
-                    VectorXd xsumsq = VectorXd::Ones(datX.rows()) * datX.cwiseProduct(datX);
+                    
+                    VectorXd onemat = VectorXd::Ones(datX.rows());
+                    
+                    VectorXd xsums  = onemat.transpose() * datX;
+                    
+                    VectorXd xsumsq = onemat.transpose() * datX.cwiseProduct(datX);
                     
                     VectorXd xysum = datX.transpose() * datY;
                     
                     for (int jj = 0; jj < datX.cols(); ++jj)
                     {
                         
-                        double xsqdiff = (xsumsq(jj) - std::pow(xsums(jj), 2) /n );
+                        double xsqdiff = (xsumsq(jj) - std::pow(xsums(jj), 2) / n );
                         if (xsqdiff <= 1e-14 && xsqdiff >= -1e-14)
                         {
                             beta_unpen(jj) = 0;
