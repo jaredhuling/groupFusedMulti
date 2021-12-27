@@ -17,7 +17,7 @@ groupFusedMulti(
   use.alpha.param = TRUE,
   fuse.level = c("last_group", "first_group", "all"),
   fuse.none.group = TRUE,
-  lambda.fused.min = 1e-05,
+  lambda.fused.min = ifelse(ncol(x) >= nrow(x), 0.001, 1e-05),
   lambda.fused.max.ratio = 1e-05,
   penalty.factor = NULL,
   group.weights = NULL,
