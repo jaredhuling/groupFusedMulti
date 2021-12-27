@@ -1109,7 +1109,7 @@ RcppExport SEXP admm_oglasso_fused_sparse(SEXP x_,
                             beta_unpen(jj) = 0;
                         } else
                         {
-                            beta_unpen(jj) = (xysum(jj) - xsums(jj) * ysum / n) / xsqdiff;
+                            beta_unpen(jj) = (xysum(jj) - xsums(jj) * ysum / n) / (xsqdiff);
                         }
                     }
                 } else if (family(0) == "binomial")

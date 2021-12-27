@@ -10,7 +10,7 @@
 #' @param hier.sparsity.prob probability that a group has its coefficients set to zero for any variable
 #' @param individ.sparsity.prob probability that a specific coefficient is set to zero
 #' @param group.fused.prob probability that all coefficients in a group are set to be equal to each other
-#' @param prop.zero.vars proportion of all variables that will be zero across all outcomes
+#' @param num.nonzero.vars number variables that will NOT have zero effect across all outcomes
 #' @param effect.size.max maximum magnitude of the true effect sizes
 #' @param family family for the response variable
 #' @param sd standard devation for gaussian simulations
@@ -80,7 +80,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
                                      hier.sparsity.prob = 0.1,
                                      individ.sparsity.prob = 0.25,
                                      group.fused.prob = 0.5,
-                                     prop.zero.vars = 0.5,
+                                     num.nonzero.vars = min(nvars, 25L),
                                      family = c("gaussian", "binomial"),
                                      sd  = 1,
                                      beta = NULL,
@@ -94,6 +94,8 @@ gen_sparse_multivar_data <- function(nvars = 10L,
     #stopifnot(x.rho[1] >= 0)
     stopifnot(y.rho[1] >= 0)
     
+    stopifnot(num.nonzero.vars <= nvars)
+    
     sig_X <- x.rho ^ abs(outer(1:nvars, 1:nvars, FUN = "-"))
     
     sig_y <- y.rho ^ abs(outer(1:noutcomes, 1:noutcomes, FUN = "-"))
@@ -106,7 +108,7 @@ gen_sparse_multivar_data <- function(nvars = 10L,
     x.test   <- MASS::mvrnorm(n = nobs.test, mu = numeric(nvars), Sigma = sig_X)
     eps.test <- MASS::mvrnorm(n = nobs.test, mu = numeric(noutcomes), Sigma = (sd^2) * sig_y)
     
-    n_nonzero <- floor((1-prop.zero.vars) * nvars)
+    n_nonzero <- num.nonzero.vars
     beta <- matrix(0, nrow = nvars, ncol = noutcomes)
     beta[1:n_nonzero,] <- sample(c(1,0.5, 0.25, -1, -0.5, -0.25), size = n_nonzero * noutcomes, replace = TRUE)
     

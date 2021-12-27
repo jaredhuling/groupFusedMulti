@@ -13,7 +13,7 @@ gen_sparse_multivar_data(
   hier.sparsity.prob = 0.1,
   individ.sparsity.prob = 0.25,
   group.fused.prob = 0.5,
-  prop.zero.vars = 0.5,
+  num.nonzero.vars = min(nvars, 25L),
   family = c("gaussian", "binomial"),
   sd = 1,
   beta = NULL,
@@ -40,7 +40,7 @@ groups of the outcomes}
 
 \item{group.fused.prob}{probability that all coefficients in a group are set to be equal to each other}
 
-\item{prop.zero.vars}{proportion of all variables that will be zero across all outcomes}
+\item{num.nonzero.vars}{number variables that will NOT have zero effect across all outcomes}
 
 \item{family}{family for the response variable}
 
