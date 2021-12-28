@@ -20,11 +20,13 @@
   lam.fused.idx = NULL,
   which.outcome = 1,
   which.variable = 1,
+  which.outcome.group = 1,
   xvar = c("loglambda", "norm", "lambda", "dev"),
   xlab = iname,
   ylab = "Coefficients",
   labsize = 1,
-  plot_only_nonzero = TRUE,
+  plot.only.nonzero = TRUE,
+  vline.val = NULL,
   ...
 )
 }
@@ -54,6 +56,8 @@ outcome (given by \code{which.outcome}]) are plotted as a function of the tuning
 
 \item{which.variable}{which outcome's coefficients should be plotted?}
 
+\item{which.outcome.group}{if there are multiple outcome groupings, which of the groups should be used? Only used if multiple outcome groupings are present}
+
 \item{xvar}{What is on the X-axis. "norm" plots against the L1-norm of the coefficients, "lambda" against the log-lambda sequence, and "dev"
 against the percent deviance explained.}
 
@@ -62,6 +66,11 @@ against the percent deviance explained.}
 \item{ylab}{character value supplied for y-axis label}
 
 \item{labsize}{label size}
+
+\item{plot.only.nonzero}{plot path only for values of the tuning parameter for which not all coefficients are zero?}
+
+\item{vline.val}{value for the x-axis for which to include a vertical line. Defaults to no vertical line. Can be used to track tuning parameter
+value that was chosen by cross-validation}
 }
 \description{
 Plot method for cv.groupFusedMulti fitted objects

@@ -9,11 +9,15 @@
 #' @param lam.fused.idx which lambda to use? specify integer between 1 and the number of tuning parameters used for fused lasso
 #' @param which.outcome which outcome's coefficients should be plotted? 
 #' @param which.variable which outcome's coefficients should be plotted? 
+#' @param which.outcome.group if there are multiple outcome groupings, which of the groups should be used? Only used if multiple outcome groupings are present
 #' @param xvar What is on the X-axis. "norm" plots against the L1-norm of the coefficients, "lambda" against the log-lambda sequence, and "dev"
 #' against the percent deviance explained.
 #' @param xlab character value supplied for x-axis label
 #' @param ylab character value supplied for y-axis label
 #' @param labsize label size
+#' @param plot.only.nonzero plot path only for values of the tuning parameter for which not all coefficients are zero?
+#' @param vline.val value for the x-axis for which to include a vertical line. Defaults to no vertical line. Can be used to track tuning parameter
+#' value that was chosen by cross-validation
 #' @param ... other graphical parameters for the plot
 #' @rdname plot
 #' @importFrom graphics matplot
@@ -58,10 +62,12 @@ plot.groupFusedMulti <- function(x,
                                  lam.fused.idx = NULL,
                                  which.outcome = 1,
                                  which.variable = 1,
+                                 which.outcome.group = 1,
                                  xvar = c("loglambda", "norm", "lambda", "dev"),
                                  xlab = iname, ylab = "Coefficients",
                                  labsize = 1,
-                                 plot_only_nonzero = TRUE,
+                                 plot.only.nonzero = TRUE,
+                                 vline.val = NULL,
                                  ...)
 {
     plot_type <- match.arg(plot.type)
@@ -102,6 +108,15 @@ plot.groupFusedMulti <- function(x,
     xvar <- match.arg(xvar)
     
     
+    if (is.matrix(x$outcome.groups))
+    {
+        if (which.outcome.group < 1 | which.outcome.group > nrow(x$outcome.groups))
+        {
+            stop(paste0("Invalid value for 'which.outcome.group', must be between 1 and ", nrow(x$outcome.groups), "."))
+        }
+    }
+    
+    
     if (plot_type == "all_variables")
     {
         if (is.list(x$beta))
@@ -125,7 +140,7 @@ plot.groupFusedMulti <- function(x,
     ## missing means 0 (ie no variation in that subpopulation for that variable)
     nbeta[is.na(nbeta)] <- 0
     
-    if (plot_only_nonzero)
+    if (plot.only.nonzero)
     {
         which_nz <- colSums(abs(nbeta)) >= 1e-6
         
@@ -152,19 +167,19 @@ plot.groupFusedMulti <- function(x,
            },
            "lambda" = {
                index <- if(is.matrix(x$lambda)){x$lambda[,lam.fused.idx]} else {x$lambda}
-               if (plot_only_nonzero) index <- index[which_nz]
+               if (plot.only.nonzero) index <- index[which_nz]
                iname <- expression(lambda)
                xlim <- rev(range(index))
            },
            "loglambda" = {
                index <- if(is.matrix(x$lambda)){log(x$lambda[,lam.fused.idx])} else {log(x$lambda)}
-               if (plot_only_nonzero) index <- index[which_nz]
+               if (plot.only.nonzero) index <- index[which_nz]
                iname <- expression(log(lambda))
                xlim <- rev(range(index))
            },
            "dev" = {
                index = x$sumSquare
-               if (plot_only_nonzero) index <- index[which_nz]
+               if (plot.only.nonzero) index <- index[which_nz]
                iname = "Sum of Squares"
                xlim <- range(index)
            }
@@ -203,7 +218,7 @@ plot.groupFusedMulti <- function(x,
             {
                 lamval   <- round(x$lambda.fused[[lam.fused.idx]], 5)
                 main.txt <- paste0(rn[which.variable], ", LamFused=", lamval)
-                vnm <- rn[which.variable]
+                vnm <- rn[which.variable + 1]
                 main.txt <- bquote(.(vnm)~", "~ lambda[Fused]==.(lamval))
             } else
             {
@@ -224,16 +239,25 @@ plot.groupFusedMulti <- function(x,
         }
     }
     
-    unique.outcome.groups <- unique(x$outcome.groups)
+    
+    if (is.matrix(x$outcome.groups))
+    {
+        outcome.groups <- x$outcome.groups[which.outcome.group,]
+    } else
+    {
+        outcome.groups <- x$outcome.groups
+    }
+    
+    unique.outcome.groups <- unique(outcome.groups)
     
     if (length(unique.outcome.groups) > 1 & plot_type == "all_outcomes")
     {
         cols <- rainbow(length(unique.outcome.groups))
-        colseq <- character(length(x$outcome.groups))
+        colseq <- character(length(outcome.groups))
         
         for (og in 1:length(unique.outcome.groups))
         {
-            colseq[x$outcome.groups == unique.outcome.groups[og]] <- cols[og]
+            colseq[outcome.groups == unique.outcome.groups[og]] <- cols[og]
         }
     } else
     {
@@ -272,6 +296,11 @@ plot.groupFusedMulti <- function(x,
             ylab = ""
         }
         
+        if (!is.null(vline.val))
+        {
+            abline(v = vline.val, lty = "dashed")
+        }
+        
         #atdf <- pretty(index, n = 10L)
         #plotnz <- approx(x = index, y = x$nzero[[which.model]], xout = atdf, rule = 2, method = "constant", f = approx.f)$y
         #axis(side=3, at = atdf, labels = plotnz, tick=FALSE, line=0, ...)
@@ -304,7 +333,7 @@ plot.groupFusedMulti <- function(x,
     {
         coefsplot <- as.data.frame(nbeta)
         coefsplot$Outcome <- rownames(coefsplot)
-        coefsplot$Outcome_Groups <- as.factor(x$outcome.groups)
+        coefsplot$Outcome_Groups <- as.factor(outcome.groups)
         lamcols <- head(colnames(coefsplot),-2)
         coefsplot_tall <- reshape(as.data.frame(coefsplot), direction = "long", varying = list(lamcols))#, times = as.numeric(lamcols))
         colnames(coefsplot_tall)[4] <- "Beta"
@@ -329,6 +358,11 @@ plot.groupFusedMulti <- function(x,
         if (xvar %in% c("lambda", "loglambda"))
         {
             cfplt <- cfplt + coord_cartesian(xlim = rev(range(coefsplot_tall$lambda)))
+        }
+        
+        if (!is.null(vline.val))
+        {
+            cfplt <- cfplt + geom_vline(xintercept = vline.val, linetype = "dashed")
         }
         
         
