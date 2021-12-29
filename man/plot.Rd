@@ -28,6 +28,7 @@
   labsize = 1,
   plot.only.nonzero = TRUE,
   vline.val = NULL,
+  base.size = 12,
   ...
 )
 }
@@ -74,6 +75,9 @@ against the percent deviance explained.}
 
 \item{vline.val}{value for the x-axis for which to include a vertical line. Defaults to no vertical line. Can be used to track tuning parameter
 value that was chosen by cross-validation}
+
+\item{base.size}{base font size for any plots constructed with \code{ggplot2} (i.e. only used when \code{plot.type='all_outcomes'}). Defaults
+to 12}
 }
 \description{
 Plot method for cv.groupFusedMulti fitted objects

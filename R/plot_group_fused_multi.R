@@ -19,6 +19,8 @@
 #' @param plot.only.nonzero plot path only for values of the tuning parameter for which not all coefficients are zero?
 #' @param vline.val value for the x-axis for which to include a vertical line. Defaults to no vertical line. Can be used to track tuning parameter
 #' value that was chosen by cross-validation
+#' @param base.size base font size for any plots constructed with \code{ggplot2} (i.e. only used when \code{plot.type='all_outcomes'}). Defaults
+#' to 12
 #' @param ... other graphical parameters for the plot
 #' @rdname plot
 #' @importFrom graphics matplot
@@ -70,6 +72,7 @@ plot.groupFusedMulti <- function(x,
                                  labsize = 1,
                                  plot.only.nonzero = TRUE,
                                  vline.val = NULL,
+                                 base.size = 12,
                                  ...)
 {
     plot_type <- match.arg(plot.type)
@@ -362,7 +365,7 @@ plot.groupFusedMulti <- function(x,
             xlab(xlab) +
             ggtitle(main_txt) + 
             ylab(expression(hat(beta))) + 
-            theme_bw() +
+            theme_bw(base_size = base.size) +
             theme(axis.title.y = element_text(angle = 0, vjust=0.5),
                   legend.position = "bottom")
         
