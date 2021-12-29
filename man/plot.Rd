@@ -24,6 +24,7 @@
   xvar = c("loglambda", "norm", "lambda", "dev"),
   xlab = iname,
   ylab = "Coefficients",
+  main = NULL,
   labsize = 1,
   plot.only.nonzero = TRUE,
   vline.val = NULL,
@@ -64,6 +65,8 @@ against the percent deviance explained.}
 \item{xlab}{character value supplied for x-axis label}
 
 \item{ylab}{character value supplied for y-axis label}
+
+\item{main}{text for plot title}
 
 \item{labsize}{label size}
 

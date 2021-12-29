@@ -14,6 +14,7 @@
 #' against the percent deviance explained.
 #' @param xlab character value supplied for x-axis label
 #' @param ylab character value supplied for y-axis label
+#' @param main text for plot title
 #' @param labsize label size
 #' @param plot.only.nonzero plot path only for values of the tuning parameter for which not all coefficients are zero?
 #' @param vline.val value for the x-axis for which to include a vertical line. Defaults to no vertical line. Can be used to track tuning parameter
@@ -65,6 +66,7 @@ plot.groupFusedMulti <- function(x,
                                  which.outcome.group = 1,
                                  xvar = c("loglambda", "norm", "lambda", "dev"),
                                  xlab = iname, ylab = "Coefficients",
+                                 main = NULL,
                                  labsize = 1,
                                  plot.only.nonzero = TRUE,
                                  vline.val = NULL,
@@ -240,6 +242,15 @@ plot.groupFusedMulti <- function(x,
     }
     
     
+    if (is.null(main))
+    {
+        main_txt <- main.txt
+    } else
+    {
+        main_txt <- main
+    }
+    
+    
     if (is.matrix(x$outcome.groups))
     {
         outcome.groups <- x$outcome.groups[which.outcome.group,]
@@ -282,7 +293,7 @@ plot.groupFusedMulti <- function(x,
         
         matplot(index, t(nbeta), lty = 1,
                 xlab = xlab, ylab = "",
-                xlim = xlim, main = main.txt,
+                xlim = xlim, main = main_txt,
                 col = colseq,
                 type = 'l', ...)
         
@@ -349,7 +360,7 @@ plot.groupFusedMulti <- function(x,
             ggplot(aes(x = lambda, y = Beta, group = Outcome, color = Outcome_Groups)) +
             geom_line() +
             xlab(xlab) +
-            ggtitle(main.txt) + 
+            ggtitle(main_txt) + 
             ylab(expression(hat(beta))) + 
             theme_bw() +
             theme(axis.title.y = element_text(angle = 0, vjust=0.5),
