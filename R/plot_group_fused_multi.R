@@ -23,10 +23,13 @@
 #' to 12
 #' @param ... other graphical parameters for the plot
 #' @rdname plot
-#' @importFrom graphics matplot
-#' @importFrom stats na.omit
+#' @importFrom graphics matplot mtext strwidth
+#' @importFrom grDevices rainbow
+#' @importFrom stats na.omit rbinom reshape sd
 #' @importFrom ggrepel geom_text_repel
 #' @importFrom cowplot plot_grid align_plots
+#' @importFrom ggplot2 ggplot geom_line ggtitle theme_bw element_text coord_cartesian
+#' @importFrom ggplot2 geom_vline scale_x_continuous scale_y_continuous margin
 #' @export
 #' @examples
 #' library(Matrix)
@@ -121,6 +124,8 @@ plot.groupFusedMulti <- function(x,
         }
     }
     
+    
+    Outcome_Groups <- NULL
     
     if (plot_type == "all_variables")
     {
@@ -359,8 +364,8 @@ plot.groupFusedMulti <- function(x,
         
         coefsplot_label_dat <- coefsplot_tall[coefsplot_tall$time == max(coefsplot_tall$time),]
         
-        cfplt <- coefsplot_tall %>%
-            ggplot(aes(x = lambda, y = Beta, group = Outcome, color = Outcome_Groups)) +
+        cfplt <- ggplot(data = coefsplot_tall, 
+                        aes(x = lambda, y = Beta, group = Outcome, color = Outcome_Groups)) +
             geom_line() +
             xlab(xlab) +
             ggtitle(main_txt) + 
