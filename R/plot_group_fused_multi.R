@@ -374,9 +374,9 @@ plot.groupFusedMulti <- function(x,
         cfplt <- ggplot(data = coefsplot_tall, 
                         aes(x = lambda, y = Beta, group = Outcome, color = Outcome_Groups)) +
             geom_line() +
-            xlab(xlab) +
+            ggplot2::xlab(xlab) +
             ggtitle(main_txt) + 
-            ylab(expression(hat(beta))) + 
+            ggplot2::ylab(expression(hat(beta))) + 
             theme_bw(base_size = base.size) +
             theme(axis.title.y = element_text(angle = 0, vjust=0.5),
                   legend.position = "bottom")
