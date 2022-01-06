@@ -36,54 +36,50 @@
 #' @export
 #' @examples
 #' 
-#' library(Matrix)
-#' 
 #' set.seed(123)
-#' n.obs <- 150
-#' n.vars <- 25
 #'
-#' true.beta.mat <- array(NA, dim = c(3, n.vars))
-#' true.beta.mat[1,] <- c(-0.5, -1, 0, 0, 2, rep(0, n.vars - 5))
-#' true.beta.mat[2,] <- c(0.5, 0.5, -0.5, -0.5, 1, -1, rep(0, n.vars - 6))
-#' true.beta.mat[3,] <- c(0, 0, 1, 1, -1, rep(0, n.vars - 5))
-#' rownames(true.beta.mat) <- c("1,0", "1,1", "0,1")
-#' true.beta <- as.vector(t(true.beta.mat))
+#' dat.sim <- gen_sparse_multivar_data(nvars = 15L,
+#'                    noutcomes = 8L,
+#'                    nobs = 100L,
+#'                    nobs.test = 100L,
+#'                    num.nonzero.vars = 10,
+#'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+#'                                           c(1,1,1,2,2,3,3,3)))
 #'
-#' x.sub1 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
-#' x.sub2 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
-#' x.sub3 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
-#'
-#' x <- as.matrix(rbind(x.sub1, x.sub2, x.sub3))
-#'
-#' conditions <- as.matrix(cbind(c(rep(1, 2 * n.obs), rep(0, n.obs)),
-#'                               c(rep(0, n.obs), rep(1, 2 * n.obs))))
-#'
-#' y <- rnorm(n.obs * 3, sd = 3) + drop(as.matrix(bdiag(x.sub1, x.sub2, x.sub3)) %*% true.beta)
-#'
-#' fit <- cv.vennLasso(x = x, y = y, groups = conditions, nfolds = 3)
-#'
-#' fitted.coef <- predict(fit$vennLasso.fit, type = "coefficients", s = fit$lambda.min)
-#' (true.coef <- true.beta.mat[match(dimnames(fit$vennLasso.fit$beta)[[1]], 
-#'                                   rownames(true.beta.mat)),])
-#' round(fitted.coef, 2)
-#'
-#' ## effects smaller for logistic regression
+#' x        <- dat.sim$x
+#' x.test   <- dat.sim$x.test
+#' y        <- dat.sim$y
+#' y.test   <- dat.sim$y.test
+#' beta     <- dat.sim$beta
+#' 
 #' \dontrun{
-#' true.beta.mat <- true.beta.mat / 2
-#' true.beta <- true.beta / 2
-#' # logistic regression example#'
-#' y <- rbinom(n.obs * 3, 1, 
-#'        prob = 1 / (1 + exp(-drop(as.matrix(bdiag(x.sub1, x.sub2, x.sub3)) %*% true.beta))))
 #'
-#' bfit <- cv.vennLasso(x = x, y = y, groups = conditions, family = "binomial",
-#'                      nfolds = 3)
-#'
-#' fitted.coef <- predict(bfit$vennLasso.fit, type = "coefficients", s = bfit$lambda.min)
-#' (true.coef <- true.beta.mat[match(dimnames(bfit$vennLasso.fit$beta)[[1]], 
-#'                                   rownames(true.beta.mat)),])
-#' round(fitted.coef, 2)
+#' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+#'                         c(1,1,1,2,2,3,3,3))
+#'                         
+#' fit.adapt <- cv.groupFusedMulti(x, y,
+#'                                 nlambda        = 50,
+#'                                 lambda.fused = c(0.000005, 0.00001, 0.000025, 0.00005, 0.0001),
+#'                                 outcome.groups = outcome_groups,
+#'                                 adaptive.lasso = TRUE, adaptive.fused = TRUE,
+#'                                 gamma          = 0.25,
+#'                                 nfolds         = 5)
+#' 
+#' est.coefs <- predict(fit.adapt, type = "coef")
+#' colnames(beta) <- colnames(est.coefs)
+#' 
+#' round(est.coefs, 3)
+#' beta
+#' 
+#' preds.a <- predict(fit.adapt, x.test, type = 'response')
+#' 
+#' ## rmse for each outcome
+#' sqrt(colMeans((y.test - preds.a) ^ 2))
+#' 
+#' ## avg rmse
+#' mean(sqrt(colMeans((y.test - preds.a) ^ 2)))
+#'                    
 #' }
-#'
 cv.groupFusedMulti <- function(x, y,
                                outcome.groups,
                                lambda       = NULL,

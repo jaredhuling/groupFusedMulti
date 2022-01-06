@@ -20,7 +20,10 @@
 #' is 0.01. A very small value of \code{lambda.min.ratio} can lead to a saturated fit
 #' when \code{nobs < nvars}.
 #' @param lambda.fused tuning parameter for fused lasso penalty
-#' @param use.alpha.param Should the 'alpha' parameterization for the fused lasso be used? alpha=1 will correspond to no fused lasso and alpha=0 will be all fused lasso
+#' @param use.alpha.param Should the 'alpha' parameterization for the fused lasso be used? \code{alpha=1} will correspond to no fused lasso and \code{alpha=0} will be all fused lasso
+#' @param fuse.level used if there are multiple groupings for the outcomes. If \code{"last_group"}, then the fused lasso is applied within groups defined
+#' in the last outcome grouping (i.e. the last row of \code{outcome.groups}), if \code{"first_group"}, then the fused lasso is applied within groups defined
+#' in the first outcome grouping (i.e. the first row of \code{outcome.groups}, if \code{"all"}, then fused lasso applied to all pairs of outcomes.
 #' @param fuse.none.group Should the coefficients of the none subpopulation be fused with coefficients for subpopulations with just one condition?
 #' @param lambda.fused.min minimum value used for the fused lasso tuning parameter
 #' @param lambda.fused.max.ratio scalar value that is the ratio of the largest to smallest values
@@ -57,7 +60,31 @@
 #'
 #' @export
 #' @examples
-#' library(Matrix)
+#' 
+#' set.seed(123)
+#'
+#' dat.sim <- gen_sparse_multivar_data(nvars = 10L,
+#'                    noutcomes = 8L,
+#'                    nobs = 100L,
+#'                    num.nonzero.vars = 5,
+#'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+#'                                           c(1,1,1,2,2,3,3,3)))
+#'
+#' x        <- dat.sim$x
+#' y        <- dat.sim$y
+#' beta     <- dat.sim$beta
+#'
+#' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+#'                         c(1,1,1,2,2,3,3,3))
+#'                         
+#' fit.adapt <- groupFusedMulti(x, y,
+#'                              nlambda        = 25,
+#'                              lambda.fused = c(0.00001, 0.0001, 0.001),
+#'                              outcome.groups = outcome_groups,
+#'                              adaptive.lasso = TRUE, adaptive.fused = TRUE,
+#'                              gamma          = 0.5)
+#' 
+#' plot(fit.adapt, lam.fused.idx = 2)
 #' 
 groupFusedMulti <- function(x, 
                             y,

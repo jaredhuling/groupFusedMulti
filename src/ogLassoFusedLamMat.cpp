@@ -605,7 +605,7 @@ RcppExport SEXP admm_oglasso_fused_dense_lammat(SEXP x_,
 
     }
     
-    std::cout << "end adapt lasso section" << std::endl;
+    //std::cout << "end adapt lasso section" << std::endl;
 
     //   =======================================   //
     //         End Adaptive Lasso Section
@@ -628,7 +628,7 @@ RcppExport SEXP admm_oglasso_fused_dense_lammat(SEXP x_,
         
         VectorXd loss_tmp(nlambda);
         
-        std::cout << "lambda fused: " << j << std::endl;
+        //std::cout << "lambda fused: " << j << std::endl;
         
         for(int i = 0; i < nlambda; i++)
         {

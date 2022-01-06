@@ -356,7 +356,7 @@ predict.groupFusedMulti <- function(object, newx = NULL,
         
         for (l in 1:nlam)
         {
-            nfit.tmp[,,l] <- Matrix::cbind(1, newx) %*% nbeta[,,l]
+            nfit.tmp[,,l] <- cbind(1, newx) %*% nbeta[,,l]
         }
     }
     

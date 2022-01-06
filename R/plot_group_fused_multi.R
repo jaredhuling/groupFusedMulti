@@ -30,38 +30,45 @@
 #' @importFrom cowplot plot_grid align_plots
 #' @importFrom ggplot2 ggplot geom_line ggtitle theme_bw element_text coord_cartesian
 #' @importFrom ggplot2 geom_vline scale_x_continuous scale_y_continuous margin
+#' @importFrom ggplot2 element_blank theme .pt aes
 #' @export
 #' @examples
-#' library(Matrix)
+#' 
+#' ## examples for plot groupFusedMulti
 #' 
 #' set.seed(123)
-#' n.obs <- 200
-#' n.vars <- 50
 #'
-#' true.beta.mat <- array(NA, dim = c(3, n.vars))
-#' true.beta.mat[1,] <- c(-0.5, -1, 0, 0, 2, rep(0, n.vars - 5))
-#' true.beta.mat[2,] <- c(0.5, 0.5, -0.5, -0.5, 1, -1, rep(0, n.vars - 6))
-#' true.beta.mat[3,] <- c(0, 0, 1, 1, -1, rep(0, n.vars - 5))
-#' rownames(true.beta.mat) <- c("1,0", "1,1", "0,1")
-#' true.beta <- as.vector(t(true.beta.mat))
+#' dat.sim <- gen_sparse_multivar_data(nvars = 10L,
+#'                    noutcomes = 8L,
+#'                    nobs = 100L,
+#'                    num.nonzero.vars = 5,
+#'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+#'                                           c(1,1,1,2,2,3,3,3)))
 #'
-#' x.sub1 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
-#' x.sub2 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
-#' x.sub3 <- matrix(rnorm(n.obs * n.vars), n.obs, n.vars)
+#' x        <- dat.sim$x
+#' y        <- dat.sim$y
+#' beta     <- dat.sim$beta
 #'
-#' x <- as.matrix(rbind(x.sub1, x.sub2, x.sub3))
-#'
-#' conditions <- as.matrix(cbind(c(rep(1, 2 * n.obs), rep(0, n.obs)),
-#'                               c(rep(0, n.obs), rep(1, 2 * n.obs))))
-#'
-#' y <- rnorm(n.obs * 3, sd = 3) + drop(as.matrix(bdiag(x.sub1, x.sub2, x.sub3)) %*% true.beta)
-#'
-#' fit <- vennLasso(x = x, y = y, groups = conditions)
-#'
-#' layout(matrix(1:3, ncol = 3))
-#' plot(fit, which.subpop = 1)
-#' plot(fit, which.subpop = 2)
-#' plot(fit, which.subpop = 3)
+#' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+#'                         c(1,1,1,2,2,3,3,3))
+#'                         
+#' fit.adapt <- groupFusedMulti(x, y,
+#'                              nlambda        = 25,
+#'                              lambda.fused = c(0.00001, 0.0001, 0.001),
+#'                              outcome.groups = outcome_groups,
+#'                              adaptive.lasso = TRUE, adaptive.fused = TRUE,
+#'                              gamma          = 0.5)
+#' 
+#' ## plot all variables for first outcome (2nd fused lasso parameter)
+#' plot(fit.adapt, lam.fused.idx = 2, which.outcome = 1)
+#' 
+#' ## plot all variables for 8th outcome
+#' plot(fit.adapt, lam.fused.idx = 2, which.outcome = 8,
+#'      plot.type = "all_variables")
+#' 
+#' ## plot effects of first variable on all outcomes
+#' plot(fit.adapt, lam.fused.idx = 2, which.variable = 1,
+#'      plot.type = "all_outcomes")
 #'
 plot.groupFusedMulti <- function(x, 
                                  plot.type = c("all_variables", "all_outcomes"),
@@ -125,7 +132,7 @@ plot.groupFusedMulti <- function(x,
     }
     
     
-    Outcome_Groups <- NULL
+    Outcome_Groups <- Beta <- Outcome <- lambda <- NULL
     
     if (plot_type == "all_variables")
     {

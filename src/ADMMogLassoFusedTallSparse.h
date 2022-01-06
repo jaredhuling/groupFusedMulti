@@ -407,7 +407,7 @@ public:
         
         if (solver.info() == 1)
         {
-            std::cout << "Sparse Cholesky solver failed." << std::endl;    
+            //std::cout << "Sparse Cholesky solver failed." << std::endl;    
             
             matToSolve.diagonal().array() += rho * 1e-5;
             
@@ -417,10 +417,10 @@ public:
             solver.compute(matToSolve.selfadjointView<Eigen::Lower>());
         }
         
-        if (solver.info() == 1)
-        {
-            std::cout << "Sparse Cholesky solver failed. Again..." << std::endl;
-        }
+        // if (solver.info() == 1)
+        // {
+        //     std::cout << "Sparse Cholesky solver failed. Again..." << std::endl;
+        // }
         
         
         eps_primal = 0.0;
@@ -483,10 +483,10 @@ public:
         solver.compute(matToSolve.selfadjointView<Eigen::Lower>());
         //solver.compute(matToSolve);
         
-        if (solver.info() == 1)
-        {
-            std::cout << "Sparse Cholesky solver failed." << std::endl;
-        }
+        // if (solver.info() == 1)
+        // {
+        //     std::cout << "Sparse Cholesky solver failed." << std::endl;
+        // }
         
         
 

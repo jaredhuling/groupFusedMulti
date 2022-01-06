@@ -20,14 +20,17 @@
 #' @importFrom graphics par
 #' @export
 #' @examples
+#' 
+#' ## examples for plot cv.groupFusedMulti
+#' 
 #' set.seed(123)
 #'
 #' dat.sim <- gen_sparse_multivar_data(nvars = 5L,
 #'                    noutcomes = 8L,
 #'                    nobs = 500L,
 #'                    nobs.test = 500L,
-#'                    prop.zero.vars = 0.25,
-#'                    outcome.grouping = rbind(c(1,1,1,2,2,2,2,2),
+#'                    num.nonzero.vars = 5,
+#'                    outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
 #'                                             c(1,1,1,2,2,3,3,3),
 #'                                             c(1,1,2,3,3,4,4,5),
 #'                                             c(1:8)))

@@ -11,7 +11,6 @@
 #' @param individ.sparsity.prob probability that a specific coefficient is set to zero
 #' @param group.fused.prob probability that all coefficients in a group are set to be equal to each other
 #' @param num.nonzero.vars number variables that will NOT have zero effect across all outcomes
-#' @param effect.size.max maximum magnitude of the true effect sizes
 #' @param family family for the response variable
 #' @param sd standard devation for gaussian simulations
 #' @param beta a matrix of true beta values. If given, then no beta will be created and data will be simulated from the given beta

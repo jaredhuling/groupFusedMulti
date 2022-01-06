@@ -51,8 +51,6 @@ groups of the outcomes}
 \item{x.rho}{scalar, AR(1) correlation parameter for covariate distribution}
 
 \item{y.rho}{scalar, AR(1) correlation parameter for outcomes}
-
-\item{effect.size.max}{maximum magnitude of the true effect sizes}
 }
 \description{
 function to generate data with hierarchical sparsity
