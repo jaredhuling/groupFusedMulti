@@ -1,75 +1,67 @@
 ---
-output: 
-    html_document:
-        toc: true
-        keep_md: true
-        fig_width: 7
-        fig_height: 5
-        self_contained: true
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.path = "vignettes/readme_figs/")
 ```
 
-[![version](http://www.r-pkg.org/badges/version/vennLasso)](https://cran.r-project.org/package=vennLasso)
-[![Build Status](https://travis-ci.org/jaredhuling/vennLasso.svg?branch=master)](https://travis-ci.org/jaredhuling/vennLasso)
+[![version](http://www.r-pkg.org/badges/version/groupFusedMulti)](https://cran.r-project.org/package=groupFusedMulti)
+<!-- [![Build Status](https://travis-ci.org/jaredhuling/vennLasso.svg?branch=master)](https://travis-ci.org/jaredhuling/groupFusedMulti) -->
 
-# vennLasso
+# groupFusedMulti
 
-The `vennLasso` package provides methods for hierarchical variable selection for models with covariate effects stratified by multiple binary factors.
+The `groupFusedMulti` package provides methods for hierarchical variable selection for models with covariate effects stratified by multiple binary factors.
 
 
 
 
 ## Installation and Help Files
 
-The `vennLasso` package can be installed from CRAN using:
-```{r, eval = FALSE}
-install.packages("vennLasso")
-```
+<!-- The `groupFusedMulti` package can be installed from CRAN using: -->
+<!-- ```{r, eval = FALSE} -->
+<!-- install.packages("groupFusedMulti") -->
+<!-- ``` -->
 
 The development version can be installed using the **devtools** package:
 
 ```{r, eval = FALSE}
-devtools::install_github("jaredhuling/vennLasso")
+devtools::install_github("jaredhuling/groupFusedMulti")
 ```
 
 
 or by cloning and building.
 
-Load the **vennLasso** package:
+Load the **groupFusedMulti** package:
 ```{r, warning=FALSE, message=FALSE}
-library(vennLasso)
+library(groupFusedMulti)
 ```
 
-Access help file for the main fitting function ``vennLasso()`` by running:
+Access help file for the main fitting function ``groupFusedMulti()`` by running:
 
 ```{r, eval = FALSE}
-?vennLasso
+?groupFusedMulti
 ```
 
-Help file for cross validation function ``cv.vennLasso()`` can be accessed by running:
+Help file for cross validation function ``cv.groupFusedMulti()`` can be accessed by running:
 
 ```{r, eval = FALSE}
-?cv.vennLasso
+?cv.groupFusedMulti
 ```
 
 ## A Quick Example
 
-Simulate heterogeneous data:
+Simulate multivariate response data where the responses have a natural grouping:
 
 ```{r}
-set.seed(100)
-dat.sim <- genHierSparseData(ncats = 3,  # number of stratifying factors
-                             nvars = 25, # number of variables
-                             nobs = 150, # number of observations per strata
-                             nobs.test = 10000,
-                             hier.sparsity.param = 0.5,
-                             prop.zero.vars = 0.75, # proportion of variables
-                                                   # zero for all strata
-                             snr = 0.5,  # signal-to-noise ratio
-                             family = "gaussian")
+set.seed(123)
+
+dat.sim <- gen_sparse_multivar_data(nvars = 10L,
+                   noutcomes = 8L, ## 8-dim response vector
+                   nobs = 100L,
+                   num.nonzero.vars = 5,
+                   outcome.groups = rbind(c(1,1,1,2,2,2,2,2),
+                                          c(1,1,1,2,2,3,3,3)))
 
 # design matrices
 x        <- dat.sim$x
@@ -79,78 +71,82 @@ x.test   <- dat.sim$x.test
 y        <- dat.sim$y
 y.test   <- dat.sim$y.test
 
-# binary stratifying factors
-grp      <- dat.sim$group.ind
-grp.test <- dat.sim$group.ind.test
+# true data-generating coefficients
+beta     <- rbind(0,dat.sim$beta)
+
+outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
+                        c(1,1,1,2,2,3,3,3))
 
 ```
 
-Inspect the populations for each strata:
+First fit a model for a range of tuning parameter values (no cross validation perfomed here)
 
 ```{r}
-plotVenn(grp)
+fit.gfm <- groupFusedMulti(x, y,
+                           nlambda        = 25,
+                           lambda.fused = c(0.00001, 0.0001, 0.001),
+                           outcome.groups = outcome_groups,
+                           adaptive.lasso = TRUE, adaptive.fused = TRUE,
+                           gamma          = 0.5)
 ```
 
-Fit vennLasso model with tuning parameter selected with 5-fold cross validation:
-
-```{r}
-fit.adapt <- cv.vennLasso(x, y,
-                          grp,
-                          adaptive.lasso = TRUE,
-                          nlambda        = 50,
-                          family         = "gaussian",
-                          standardize    = FALSE,
-                          intercept      = TRUE,
-                          nfolds         = 5)
-```
-
-
-Plot selected variables for each strata (not run): 
+Plot coefficient paths for the second response/outcome across all variables for the second fused lasso tuning parameter: 
 
 ```{r, eval = TRUE}
-library(igraph)
-plotSelections(fit.adapt)
+plot(fit.gfm, lam.fused.idx = 2,
+     which.outcome = 2)
 ```
+
+Plot coefficient paths for a single variable across all outcomes for the second fused lasso tuning parameter: 
+
+```{r, eval = TRUE}
+plot(fit.gfm, lam.fused.idx = 2,
+     plot.type = "all_outcomes",
+     which.variable = 1, ## plot for first variable
+     which.outcome.group = 2) ## color according to second grouping
+```
+
+Fit `groupFusedMulti` model with tuning parameter selected with 5-fold cross validation:
+
+```{r}
+cvfit.gfm <- cv.groupFusedMulti(x, y,
+                                nlambda        = 50,
+                                lambda.fused = c(0.000005, 0.00001, 0.000025, 0.00005, 0.0001),
+                                outcome.groups = outcome_groups,
+                                adaptive.lasso = TRUE, adaptive.fused = TRUE,
+                                gamma          = 0.5,
+                                nfolds         = 5)
+```
+
+
+
+Compare estimated with true coefficients
+```{r}
+est.coefs <- predict(cvfit.gfm, type = "coef")
+colnames(beta) <- colnames(est.coefs)
+rownames(beta) <- rownames(est.coefs)
+
+round(est.coefs, 3)
+beta
+```
+
 
 Predict response for test data:
 
 ```{r}
-preds.vl <- predict(fit.adapt, x.test, grp.test, s = "lambda.min",
-                    type = 'response')
+preds.gfm <- predict(cvfit.gfm, x.test, type = 'response')
+str(preds.gfm)
 ```
 
-Evaluate mean squared error:
+Evaluate mean squared error for each outcome:
 
 ```{r}
-mean((y.test - preds.vl) ^ 2)
+sqrt(colMeans((y.test - preds.gfm) ^ 2))
 ```
 
+Average MSE across the 8 outcomes:
 ```{r}
-mean((y.test - mean(y.test)) ^ 2)
-```
-
-
-Compare with naive model with all interactions between covariates and stratifying binary factors:
-```{r}
-df.x <- data.frame(y = y, x = x, grp = grp)
-df.x.test <- data.frame(x = x.test, grp = grp.test)
-
-# create formula for interactions between factors and covariates
-form <- paste("y ~ (", paste(paste0("x.", 1:ncol(x)), collapse = "+"), ")*(grp.1*grp.2*grp.3)" )
-```
-
-Fit linear model and generate predictions for test set:
-```{r}
-lmf <- lm(as.formula(form), data = df.x)
-
-preds.lm <- predict(lmf, df.x.test)
-```
-
-Evaluate mean squared error:
-
-```{r}
-mean((y.test - preds.lm) ^ 2)
-mean((y.test - preds.vl) ^ 2)
+mean(sqrt(colMeans((y.test - preds.gfm) ^ 2)))
 ```
 
 
