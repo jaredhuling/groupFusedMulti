@@ -3,7 +3,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.path = "vignettes/readme_figs/")
+knitr::opts_chunk$set(echo = TRUE) # , fig.path = "vignettes/readme_figs/"
 ```
 
 [![version](http://www.r-pkg.org/badges/version/groupFusedMulti)](https://cran.r-project.org/package=groupFusedMulti)

@@ -93,7 +93,7 @@ plot(fit.gfm, lam.fused.idx = 2,
      which.outcome = 2)
 ```
 
-![](vignettes/readme_figs/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 Plot coefficient paths for a single variable across all outcomes for the
 second fused lasso tuning parameter:
@@ -105,7 +105,7 @@ plot(fit.gfm, lam.fused.idx = 2,
      which.outcome.group = 2) ## color according to second grouping
 ```
 
-![](vignettes/readme_figs/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 Fit `groupFusedMulti` model with tuning parameter selected with 5-fold
 cross validation:
