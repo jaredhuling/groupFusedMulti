@@ -379,7 +379,8 @@ plot.groupFusedMulti <- function(x,
             ggplot2::ylab(expression(hat(beta))) + 
             theme_bw(base_size = base.size) +
             theme(axis.title.y = element_text(angle = 0, vjust=0.5),
-                  legend.position = "bottom")
+                  legend.position = "bottom") + 
+            guides(color = guide_legend(title="Outcome Groups"))
         
         if (xvar %in% c("lambda", "loglambda"))
         {
