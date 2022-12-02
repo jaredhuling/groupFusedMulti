@@ -258,7 +258,7 @@ oglasso <- function(x, y,
 
     if(is.null(lambda.min.ratio))
     {
-        lambda.min.ratio <- ifelse(nrow(x) < ncol(x), 0.05, 0.0001)
+        lambda.min.ratio <- ifelse(nrow(x) < ncol(x), 0.01, 0.0001)
     }
 
     gamma       <- as.double(gamma)

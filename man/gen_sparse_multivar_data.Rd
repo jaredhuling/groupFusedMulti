@@ -14,9 +14,12 @@ gen_sparse_multivar_data(
   individ.sparsity.prob = 0.25,
   group.fused.prob = 0.5,
   num.nonzero.vars = min(nvars, 25L),
-  family = c("gaussian", "binomial"),
+  family = c("gaussian", "binomial", "ordinal"),
+  x.distribution = c("gaussian", "binary"),
   sd = 1,
   beta = NULL,
+  ordinal.link.cutoffs = c(-2, -1, -0.5, 0, 0.5, 1, 2),
+  x.binary.prob = 0.1,
   x.rho = 0.5,
   y.rho = 0.5
 )
@@ -42,11 +45,18 @@ groups of the outcomes}
 
 \item{num.nonzero.vars}{number variables that will NOT have zero effect across all outcomes}
 
-\item{family}{family for the response variable}
+\item{family}{family for the response variable; either \code{"gaussian"}, \code{"binomial"}, or \code{"ordinal"}}
+
+\item{x.distribution}{distribution of covariates \code{x}: either \code{"gaussian"} or \code{"binary"}}
 
 \item{sd}{standard devation for gaussian simulations}
 
 \item{beta}{a matrix of true beta values. If given, then no beta will be created and data will be simulated from the given beta}
+
+\item{ordinal.link.cutoffs}{sorted (ascending) vector of cutoff values for latent variable model when response family is ordinal. ordinal
+response will have number of levels equal to the length of \code{ordinal.link.cutoffs} plus 1}
+
+\item{x.binary.prob}{if \code{x.distribution} is binary, this is the probability that each entry in the covariates is 1 (versus 0)}
 
 \item{x.rho}{scalar, AR(1) correlation parameter for covariate distribution}
 

@@ -18,6 +18,7 @@
 #' @importFrom graphics layout
 #' @importFrom graphics lines
 #' @importFrom graphics par
+#' @importFrom ggplot2 guides guide_legend
 #' @export
 #' @examples
 #' 
