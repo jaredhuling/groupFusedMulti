@@ -19,7 +19,7 @@ gen_sparse_multivar_data(
   sd = 1,
   beta = NULL,
   ordinal.link.cutoffs = c(-2, -1, -0.5, 0, 0.5, 1, 2),
-  x.binary.prob = 0.1,
+  x.binary.prob = 0.2,
   x.rho = 0.5,
   y.rho = 0.5
 )
