@@ -5,8 +5,7 @@ Version: 0.1
 Authors@R: c(
     person("Jared", "Huling", , "jaredhuling@gmail.com", c("aut", "cre"), comment = c(ORCID = "0000-0003-0670-4845"))
     )
-Description: Provides variable selection and estimation routines for models
-    with for multivariate outcomes with structure. 
+Description: Provides variable selection and estimation routines for models with for multivariate outcomes with structure and implements the methodology of Huling, et al (2023) <arxiv:2302.11098>. 
 URL: https://github.com/jaredhuling/groupFusedMulti
 BugReports: https://github.com/jaredhuling/groupFusedMulti/issues
 License: GPL (>= 2)
@@ -26,7 +25,7 @@ Imports:
 LinkingTo: Rcpp,
     RcppEigen,
     RcppNumerical
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Suggests:
     knitr,
     rmarkdown

@@ -1,0 +1,15 @@
+citHeader("To cite groupFusedMulti in publications use:")
+
+bibentry(bibtype = "Article",
+  title        = "Doubly structured sparsity for grouped multivariate responses with application to functional outcome score modeling",
+  author       = c(person(given = c("Jared", "D."),
+                          family = "Huling",
+                          email = "huling@umn.edu"),
+                   person(given = c("Jennifer", "P.",
+                          family = "Lundine"),
+                   person(given = c("Julie", "C.",
+                          family = "Leonard")),
+  journal      = "Statistics in Medicine",
+  year         = "2023",
+  doi          = "10.1002/sim.9740"
+)
