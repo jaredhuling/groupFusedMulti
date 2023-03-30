@@ -5,7 +5,7 @@
 
 ## Test environments
 
-* Debian Linux, (R-devel unstable, 2022-06-20 r82506 ucrt)
+* Debian Linux, R Under development (unstable) (2023-03-19 r84006)
 * local Mac OSX Catalina (R 4.2.0)
 
 ## R CMD check results
