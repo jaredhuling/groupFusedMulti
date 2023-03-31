@@ -2,6 +2,7 @@
 ## First version for 'groupFusedMulti' -- 0.1
 
 * Initial submission to CRAN
+* Fixes minor citation issue
 
 ## Test environments
 
