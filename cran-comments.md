@@ -3,6 +3,9 @@
 
 * Initial submission to CRAN
 * Fixes minor citation issue
+* Issues brought up by CRAN fixed
+* Copyright issue fixed
+  - all copyrights are now cited in the file "inst/COPYRIGHTS" which is cited in the DESCRIPTION
 
 ## Test environments
 

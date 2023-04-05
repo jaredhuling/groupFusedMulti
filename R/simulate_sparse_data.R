@@ -25,6 +25,12 @@
 #' @importFrom stats approx
 #' @importFrom stats runif
 #' @import MASS
+#' @return a list with elements
+#' \item{beta}{the true coefficients for the data-generating model. This is a matrix with \code{nvars} rows and \code{noutcomes} columns}
+#' \item{x}{a matrix of predictors with \code{nobs} rows/observations and \code{nvars} columns/predictors}
+#' \item{y}{a matrix of outcomes/responses with \code{nobs} rows/observations and \code{noutcomes} columns/outcomes}
+#' \item{x.test}{a matrix of predictors with \code{nobs.test} rows/observations and \code{nvars} columns/predictors}
+#' \item{y.test}{a matrix of outcomes/responses with \code{nobs.test} rows/observations and \code{noutcomes} columns/outcomes}
 #' @export
 #' @examples
 #' set.seed(123)
@@ -43,7 +49,7 @@
 #' y.test   <- dat.sim$y.test
 #' beta     <- dat.sim$beta
 #' 
-#' \dontrun{
+#' \donttest{
 #'
 #' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
 #'                         c(1,1,1,2,2,3,3,3))

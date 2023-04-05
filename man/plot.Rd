@@ -79,6 +79,11 @@ value that was chosen by cross-validation}
 \item{base.size}{base font size for any plots constructed with \code{ggplot2} (i.e. only used when \code{plot.type='all_outcomes'}). Defaults
 to 12}
 }
+\value{
+\code{NULL} for function \code{plot.cv.groupFusedMulti()}.
+
+for function \code{plot.groupFusedMulti()}: either \code{NULL} or a \code{ggplot} object if \code{plot_type == "all_outcomes"}.
+}
 \description{
 Plot method for cv.groupFusedMulti fitted objects
 

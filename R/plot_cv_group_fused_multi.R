@@ -19,6 +19,7 @@
 #' @importFrom graphics lines
 #' @importFrom graphics par
 #' @importFrom ggplot2 guides guide_legend
+#' @return \code{NULL} for function \code{plot.cv.groupFusedMulti()}.
 #' @export
 #' @examples
 #' 
@@ -215,7 +216,7 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
                     axis(4, labels = round(x$lambda.fused, 5), at = log(x$lambda.fused))
                 }
                 
-                par(old.par)
+                on.exit(par(old.par))
             }
         } else if (plot.method == "heatmap")
         {

@@ -31,6 +31,7 @@
 #' @importFrom ggplot2 ggplot geom_line ggtitle theme_bw element_text coord_cartesian
 #' @importFrom ggplot2 geom_vline scale_x_continuous scale_y_continuous margin
 #' @importFrom ggplot2 element_blank theme .pt aes
+#' @return for function \code{plot.groupFusedMulti()}: either \code{NULL} or a \code{ggplot} object if \code{plot_type == "all_outcomes"}.
 #' @export
 #' @examples
 #' 
@@ -301,6 +302,7 @@ plot.groupFusedMulti <- function(x,
     
     if (plot_type == "all_variables")
     {
+        old_par <- par(no.readonly = TRUE)
         # Adjust the margins to make sure the labels fit
         labwidth <- ifelse(labsize > 0, max(strwidth(rownames(nbeta), "inches", labsize)), 0)
         margins <- par("mai")
@@ -354,7 +356,8 @@ plot.groupFusedMulti <- function(x,
             #      las = 1, cex.axis=labsize, #col.axis = colseq,
             #      lty = 1, col = colseq,  ...)
         }
-        par("mai"=margins)
+        #par("mai"=margins)
+        on.exit(par(old_par))
     } else if (plot_type == "all_outcomes")
     {
         coefsplot <- as.data.frame(nbeta)

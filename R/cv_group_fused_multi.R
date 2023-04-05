@@ -52,7 +52,7 @@
 #' y.test   <- dat.sim$y.test
 #' beta     <- dat.sim$beta
 #' 
-#' \dontrun{
+#' \donttest{
 #'
 #' outcome_groups <- rbind(c(1,1,1,2,2,2,2,2),
 #'                         c(1,1,1,2,2,3,3,3))
