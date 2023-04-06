@@ -303,6 +303,7 @@ plot.groupFusedMulti <- function(x,
     if (plot_type == "all_variables")
     {
         old_par <- par(no.readonly = TRUE)
+        on.exit(par(old_par))
         # Adjust the margins to make sure the labels fit
         labwidth <- ifelse(labsize > 0, max(strwidth(rownames(nbeta), "inches", labsize)), 0)
         margins <- par("mai")
@@ -357,7 +358,7 @@ plot.groupFusedMulti <- function(x,
             #      lty = 1, col = colseq,  ...)
         }
         #par("mai"=margins)
-        on.exit(par(old_par))
+        
     } else if (plot_type == "all_outcomes")
     {
         coefsplot <- as.data.frame(nbeta)

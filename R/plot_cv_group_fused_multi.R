@@ -129,6 +129,7 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
             } else
             {
                 old.par <- par(no.readonly = TRUE)
+                on.exit(par(old.par))
                 
                 layout(t(1:2), widths=c(6,1))
                 
@@ -216,7 +217,6 @@ plot.cv.groupFusedMulti <- function(x, sign.lambda = 1, best.fused = FALSE, plot
                     axis(4, labels = round(x$lambda.fused, 5), at = log(x$lambda.fused))
                 }
                 
-                on.exit(par(old.par))
             }
         } else if (plot.method == "heatmap")
         {
