@@ -4,6 +4,7 @@
 * Initial submission to CRAN
 * Fixes minor citation issue
 * Issues brought up by CRAN fixed
+  - re-orders on.exit() calls
 * Copyright issue fixed
   - all copyrights are now cited in the file "inst/COPYRIGHTS" which is cited in the DESCRIPTION
 
