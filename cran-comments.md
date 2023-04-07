@@ -7,6 +7,7 @@
   - re-orders on.exit() calls
 * Copyright issue fixed
   - all copyrights are now cited in the file "inst/COPYRIGHTS" which is cited in the DESCRIPTION
+  - Yixuan Qiu (author of Spectra code) is cited now as a copyright holder under Authors@R as person("Yixuan", "Qiu", , , c("cph"))
 
 ## Test environments
 
