@@ -129,7 +129,7 @@ Overlapping Group Lasso (OGLasso)
 \examples{
 library(groupFusedMulti)
 
-set.seed(123)
+set.seed(1)
 n.obs <- 1e3
 n.vars <- 15
 
@@ -140,6 +140,8 @@ y <- rnorm(n.obs, sd = 3) + drop(x \%*\% true.beta)
 
 groups <- list(c(1,2), c(2,3), c(3,4,5), 5:10, 6:12, 7:15)
 
-fit <- oglasso(x = x, y = y, group = groups)
+\donttest{
+  fit <- oglasso(x = x, y = y, group = groups)
+}
 
 }
